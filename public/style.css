@@ -98,3 +98,88 @@ h1, h2 {
      padding-bottom: 5px;
      margin-top: 30px;
 }
+
+/* public/style.css - Add styles for topic link list */
+
+.topic-link-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.topic-link-list li {
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.topic-link-list li:hover {
+    background-color: #f0f0f0; /* Slight highlight on hover */
+}
+
+
+.topic-link-list li a {
+    display: block; /* Make the whole list item clickable */
+    padding: 15px;
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1.1em;
+}
+
+.topic-link-list li a:hover {
+    text-decoration: none; /* No underline needed as whole item highlights */
+    color: #0056b3;
+}
+
+/* Style for the content section within individual theory pages */
+.theory-content {
+    background-color: #fff; /* White background for content */
+    padding: 20px;
+    border-radius: 5px;
+    /* box-shadow: 0 2px 5px rgba(0,0,0,0.1); Optional shadow */
+}
+
+.theory-content h3 {
+    margin-top: 25px; /* Add space above subheadings */
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    color: #333;
+}
+.theory-content h3:first-of-type {
+    margin-top: 0; /* No top margin for the very first h3 */
+}
+
+
+.theory-content ul {
+    margin-left: 20px; /* Indent lists */
+    margin-bottom: 15px;
+}
+.theory-content li {
+     margin-bottom: 8px; /* Space between list items */
+}
+
+.theory-content pre {
+    background-color: #f8f9fa; /* Light background for code blocks */
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    overflow-x: auto; /* Allow horizontal scrolling for long code lines */
+    font-size: 0.95em;
+}
+
+.theory-content code {
+     font-family: Consolas, 'Courier New', monospace; /* Monospace font */
+}
+
+/* Ensure the button at the end of theory page has space */
+.theory-content .topic-button {
+    margin-top: 25px;
+}
+
+.theory-content hr {
+    margin: 30px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+}

@@ -3,19 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Coding Dose- Problems</title>
-    <link rel="stylesheet" href="style.css"> <!-- Link to our CSS file -->
+    <title>Daily Coding Dose - Problems</title> <!-- Title is good -->
+    <link rel="stylesheet" href="style.css"> <!-- Link to CSS is correct -->
 </head>
 <body>
-    <h1>Daily Coding Dose - Available Problems</h1>
-    <ul id="problem-list">
-        <li>Loading problems...</li>
-    </ul>
+    <!-- === ADDED Header and Navigation === -->
+    <header>
+        <h1>Daily Coding Dose</h1>
+        <nav>
+            <a href="/">Problem List</a>
+            <a href="/topics.html">Theory Topics</a> <!-- Added link to topics page -->
+            <!-- Add other nav links if needed -->
+        </nav>
+    </header>
 
-    <script src="script.js"></script> <!-- Link to our JavaScript file -->
+    <!-- === ADDED Main Wrapper === -->
+    <main>
+        <!-- === ADDED Dynamic H2 Heading (Targeted by script.js) === -->
+        <!-- This text will be replaced by script.js if a topic is specified -->
+        <h2>Available Problems</h2>
+
+        <!-- Your original problem list UL remains here -->
+        <ul id="problem-list">
+            <li>Loading problems...</li>
+        </ul>
+    </main>
+
+    <!-- === ADDED Footer (for consistency) === -->
+    <footer>
+        <p>© 2023 Daily Coding Dose</p>
+    </footer>
+
+
+    <script src="script.js"></script> <!-- Link to JavaScript is correct -->
     <script>
-        // Run the function to load problems when the page loads
-        loadProblemList();
+        // === MODIFIED Way to Call loadProblemList ===
+        // Use DOMContentLoaded to ensure the H2 and UL elements exist before the script runs
+        document.addEventListener('DOMContentLoaded', loadProblemList);
     </script>
 </body>
 </html>

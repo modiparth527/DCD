@@ -16,8 +16,8 @@ app.use(express.static(path.join(__dirname, 'public'))); // Serve static files (
 
 // --- Hardcoded Data (Instead of a Database for now) ---
 
-const problems = {
-    '1': {
+const problems = [
+     {
         id: '1',
         title: "Two Sum",
         description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. Assume exactly one solution exists.",
@@ -28,10 +28,10 @@ const problems = {
         defaultCode: {
             javascript: `function twoSum(nums, target) {\n  // Write your code here\n  // Example: return [0, 1];};`,
             python: `from typing import List\n\ndef twoSum(nums: List[int], target: int) -> List[int]:\n    # Write your Python code here\n    pass`
-            
-        }
+        },
+        tags: ["Array", "HashTable"]
     },
-    '2': {
+     {
         id: '2',
         title: "Reverse String",
         description: "Write a function that reverses a string. The input string is given as an array of characters s.",
@@ -42,9 +42,10 @@ const problems = {
              javascript: `function reverseString(s) {\n  // Write your code here\n  // Example: s.reverse();\n};`,
              python: `from typing import List\n\ndef reverseString(s: List[str]) -> None:\n    """\n    Do not return anything, modify s in-place instead.\n    """\n    # Write your Python code here\n    pass`
             
-        }
+        },
+        tags: ["String", "Array", "Two Pointers"]
     }
-};
+];
 
 // Very simple test cases - doesn't handle complex input/output formats well yet
 const testCases = {
@@ -63,21 +64,31 @@ const testCases = {
 
 // GET /api/problems - Send a list of available problems
 app.get('/api/problems', (req, res) => {
-    const problemList = Object.values(problems).map(p => ({ id: p.id, title: p.title }));
+    const problemList = problems.map(p => ({ id: p.id, title: p.title }));
     res.json(problemList); // Send back the list as JSON data
 });
 
-// GET /api/problems/:id - Send details for a specific problem
+// GET /api/problems - Send a list of available problems (optionally filtered by topic)
 app.get('/api/problems/:id', (req, res) => {
-    const problemId = req.params.id; // Get the ID from the URL (e.g., '/api/problems/1')
-    const problem = problems[problemId];
-    if (problem) {
-        // Only send needed info, not test cases
-        const { description, examples, defaultCode, title, id } = problem;
-        res.json({ description, examples, defaultCode, title, id });
+    const requestedTopic = req.query.topic; // Get 'topic' from query string (e.g., /api/problems?topic=Array)
+    console.log("Requessssssssted topic", requestedTopic)
+    let allProblems = problems; // Get all problem objects
+
+    let filteredProblems;
+    if (requestedTopic) {
+        // Filter problems: check if the problem's tags array (case-insensitive) includes the requested topic (case-insensitive)
+        const lowerCaseTopic = requestedTopic.toLowerCase();
+        filteredProblems = allProblems.filter(p =>
+            p.tags && Array.isArray(p.tags) && p.tags.some(tag => tag.toLowerCase() === lowerCaseTopic)
+        );
     } else {
-        res.status(404).json({ error: 'Problem not found' }); // Send a 404 error if ID is invalid
+        // If no topic specified, return all problems
+        filteredProblems = allProblems;
     }
+
+    // Only send back the ID and title for the list view
+    const problemList = filteredProblems.map(p => ({ id: p.id, title: p.title }));
+    res.json(problemList); // Send back the (potentially filtered) list as JSON
 });
 
 // POST /api/submit - Handle JS and Python submissions (INSECURE EXECUTION)

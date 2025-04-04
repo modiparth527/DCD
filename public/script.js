@@ -1,33 +1,57 @@
 // script.js - Frontend Logic
 
-// --- Helper Function to Get Problem ID from URL ---
+// --- NEW Helper Function to Get Query Parameters ---
+function getUrlQueryParam(paramName) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(paramName); // Returns the value or null if not found
+}
+
+// --- Helper Function to Get Problem ID from URL (Keep as is) ---
 function getProblemIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('id');
 }
 
-// --- Function to Load Problem List (for index.html) ---
+// --- MODIFIED Function to Load Problem List (for index.html) ---
 async function loadProblemList() {
     const problemListElement = document.getElementById('problem-list');
-    if (!problemListElement) return; // Only run on index.html
+    const pageTitleElement = document.querySelector('main h2'); // Get the H2 heading
+    if (!problemListElement || !pageTitleElement) return; // Only run on index.html with expected elements
+
+    const topic = getUrlQueryParam('topic'); // Check for a topic filter
+    let apiUrl = '/api/problems';
+    let pageTitle = "Available Problems";
+
+    if (topic) {
+        apiUrl += `?topic=${encodeURIComponent(topic)}`; // Append topic to API URL
+        pageTitle = `Problems - Topic: ${topic}`; // Update page title
+    }
+    console.log("API URL", apiUrl)
+
+    pageTitleElement.textContent = pageTitle; // Set the heading text
 
     try {
-        const response = await fetch('/api/problems');
+        const response = await fetch(apiUrl); // Fetch all or filtered problems
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const problems = await response.json();
-
-        problemListElement.innerHTML = '';
+        console.log("Problems", problems)
+        problemListElement.innerHTML = ''; // Clear loading message
         if (problems.length === 0) {
-             problemListElement.innerHTML = '<li>No problems available.</li>';
-             return;
+            if (topic) {
+                 problemListElement.innerHTML = '<li>No problems found for this topic.</li>';
+            } else {
+                 problemListElement.innerHTML = '<li>No problems available.</li>';
+            }
+            return;
         }
 
         problems.forEach(problem => {
             const li = document.createElement('li');
             const link = document.createElement('a');
             link.href = `problem.html?id=${problem.id}`;
+            // Display title only, as tags are implied by the filter (if any)
             link.textContent = problem.title;
             li.appendChild(link);
             problemListElement.appendChild(li);
@@ -38,7 +62,6 @@ async function loadProblemList() {
         console.error("Failed to load problems:", error);
     }
 }
-
 
 // --- Function to Load Problem Details (for problem.html) ---
 async function loadProblemDetails() {
@@ -64,6 +87,7 @@ async function loadProblemDetails() {
 
     try {
         const response = await fetch(`/api/problems/${problemId}`);
+        console.log("ressssssponse", response)
         if (!response.ok) {
              if (response.status === 404) throw new Error('Problem not found.');
              throw new Error(`HTTP error! status: ${response.status}`);

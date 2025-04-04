@@ -3,40 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Coding Dose - Problem</title>
+    <title>Daily Coding Dose - Problem</title> <!-- Title will be updated by JS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <a href="/">< Back to Problem List</a>
+    <!-- === ADDED Header and Navigation === -->
+    <header>
+        <h1>Daily Coding Dose</h1>
+        <nav>
+            <a href="/">Problem List</a>
+            <a href="/topics.html">Theory Topics</a> <!-- Added link to topics page -->
+            <!-- Add other nav links if needed -->
+        </nav>
+    </header>
 
-    <h1 id="problem-title">Loading...</h1>
-    <div id="problem-description"></div>
+    <!-- === ADDED Main Wrapper with Layout Class === -->
+    <!-- Using the layout from the earlier example to split details and code -->
+    <main class="problem-layout">
 
-    <h2>Examples</h2>
-    <div id="problem-examples"></div>
+        <!-- === Section for Problem Details === -->
+        <section class="problem-details">
+            <h2 id="problem-title">Loading...</h2> <!-- Changed h1 to h2 for better hierarchy under header h1 -->
+            <h3>Description</h3> <!-- Changed div to h3 -->
+            <p id="problem-description">...</p> <!-- Changed div to p for semantic meaning -->
 
-    <div class="editor-controls">
-        <label for="language-select">Language:</label>
-        <select id="language-select">
-            <option value="javascript">JavaScript</option>
-            <!-- ADD THIS LINE -->
-            <option value="python">Python</option>
-            <!-- Keep other languages commented out or remove if not added yet -->
-            <!-- <option value="cpp">C++</option> -->
-            <!-- <option value="java">Java</option> -->
-        </select>
-    </div>
+            <h3>Examples</h3> <!-- Changed h2 to h3 -->
+            <div id="problem-examples">
+                 <!-- Examples will be loaded here -->
+            </div>
+        </section>
 
-    <textarea id="code-editor" rows="20" cols="80" spellcheck="false"></textarea>
+        <!-- === Section for Code Editor and Results === -->
+        <section class="code-section">
+             <h3>Your Code</h3> <!-- Added heading -->
+             <div class="controls"> <!-- Renamed class from editor-controls to controls for consistency -->
+                 <label for="language-select">Language:</label>
+                 <select id="language-select" disabled> <!-- Added disabled attribute initially -->
+                     <option value="javascript">JavaScript</option>
+                     <option value="python">Python</option>
+                     <!-- Add more languages here if supported by backend/frontend -->
+                 </select>
+             </div>
 
-    <button id="submit-btn">Submit Code</button>
+             <textarea id="code-editor" rows="20" cols="80" spellcheck="false" placeholder="Write your code here..." disabled></textarea> <!-- Added placeholder and disabled attribute -->
 
-    <h2>Result</h2>
-    <pre id="result-output">Submit your code to see the result.</pre>
+             <button id="submit-btn" disabled>Submit Code</button> <!-- Added disabled attribute -->
+
+             <h3>Result</h3> <!-- Changed h2 to h3 -->
+             <pre id="result-output">Submit your code to see the result.</pre>
+         </section>
+
+    </main>
+
+    <!-- === ADDED Footer (for consistency) === -->
+    <footer>
+        <p>© 2023 Daily Coding Dose</p>
+    </footer>
 
     <script src="script.js"></script>
     <script>
-        loadProblemDetails();
+        // === MODIFIED Way to Call loadProblemDetails ===
+        // Use DOMContentLoaded to ensure all elements exist before the script runs
+        document.addEventListener('DOMContentLoaded', loadProblemDetails);
     </script>
 </body>
 </html>

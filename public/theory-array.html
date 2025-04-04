@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory: Arrays - Daily Coding Dose</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Daily Coding Dose</h1>
+        <nav>
+            <a href="/">Problem List</a>
+            <a href="/topics.html">Theory Topics</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Theory: Arrays</h2>
+
+        <section class="theory-content">
+            <h3>Definition</h3>
+            <p>
+                Arrays are fundamental, linear data structures that store a collection of elements,
+                typically of the same data type, in contiguous (adjacent) memory locations.
+                Think of them like a numbered list of boxes, where each box holds one item and has
+                a unique number (the index) starting from 0.
+            </p>
+
+            <h3>Key Characteristics</h3>
+            <ul>
+                <li><strong>Fixed or Dynamic Size:</strong> Depending on the programming language, arrays might have a fixed size determined at creation (like in C/Java) or be dynamic, allowing them to grow or shrink (like Python lists or JavaScript arrays).</li>
+                <li><strong>Indexed Access:</strong> Elements are accessed directly using their numerical index (e.g., `myArray[0]`, `myArray[5]`).</li>
+                <li><strong>Contiguous Memory:</strong> Elements are stored one after another in memory, which allows for efficient iteration and cache performance.</li>
+                <li><strong>Homogeneous (Usually):</strong> Most statically-typed languages require array elements to be of the same type (e.g., an array of integers, an array of strings). Dynamically-typed languages (like Python, JavaScript) often allow arrays to hold elements of different types.</li>
+            </ul>
+
+            <h3>Time Complexity (Big O Notation)</h3>
+            <ul>
+                <li><strong>Access (by index):</strong> O(1) - Constant time. You can jump directly to any element if you know its index.</li>
+                <li><strong>Search (by value):</strong> O(n) - Linear time. In the worst case, you might have to check every element to find a specific value.</li>
+                <li><strong>Insertion (at end, if space available/dynamic):</strong> O(1) - Constant time (amortized for dynamic arrays).</li>
+                <li><strong>Insertion (at beginning/middle):</strong> O(n) - Linear time. All subsequent elements need to be shifted to make space.</li>
+                <li><strong>Deletion (at end):</strong> O(1) - Constant time.</li>
+                <li><strong>Deletion (at beginning/middle):</strong> O(n) - Linear time. All subsequent elements need to be shifted to fill the gap.</li>
+            </ul>
+
+            <h3>Common Operations & Use Cases</h3>
+            <ul>
+                <li>Storing lists of items (e.g., user scores, product names).</li>
+                <li>Implementing other data structures (e.g., stacks, queues, hash table buckets).</li>
+                <li>Matrix operations (using 2D arrays).</li>
+                <li>Sorting and searching algorithms often operate on arrays.</li>
+            </ul>
+
+            <h3>Example (JavaScript)</h3>
+            <pre><code>
+// Creating an array
+let numbers = [10, 20, 30, 40, 50];
+let fruits = ["Apple", "Banana", "Cherry"];
+
+// Accessing elements
+console.log(numbers[0]); // Output: 10
+console.log(fruits[2]); // Output: Cherry
+
+// Modifying elements
+numbers[1] = 25; // numbers is now [10, 25, 30, 40, 50]
+
+// Getting the length
+console.log(numbers.length); // Output: 5
+
+// Adding elements (JavaScript arrays are dynamic)
+fruits.push("Date"); // fruits is now ["Apple", "Banana", "Cherry", "Date"]
+
+// Removing the last element
+let lastFruit = fruits.pop(); // lastFruit is "Date", fruits is ["Apple", "Banana", "Cherry"]
+
+// Iterating through an array
+for (let i = 0; i < fruits.length; i++) {
+    console.log(fruits[i]);
+}
+// Or using forEach
+numbers.forEach(num => {
+    console.log(num * 2);
+});
+            </code></pre>
+
+            <hr> <!-- Separator -->
+            <p>Ready to practice?</p>
+            <a href="/index.html?topic=Array" class="topic-button">Go to Array Problems</a>
+
+        </section>
+    </main>
+    <footer>
+        <p>© 2023 Daily Coding Dose</p>
+    </footer>
+</body>
+</html>
