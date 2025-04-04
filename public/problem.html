@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Coding Dose - Problem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a href="/">< Back to Problem List</a>
+
+    <h1 id="problem-title">Loading...</h1>
+    <div id="problem-description"></div>
+
+    <h2>Examples</h2>
+    <div id="problem-examples"></div>
+
+    <div class="editor-controls">
+        <label for="language-select">Language:</label>
+        <select id="language-select">
+            <option value="javascript">JavaScript</option>
+            <!-- ADD THIS LINE -->
+            <option value="python">Python</option>
+            <!-- Keep other languages commented out or remove if not added yet -->
+            <!-- <option value="cpp">C++</option> -->
+            <!-- <option value="java">Java</option> -->
+        </select>
+    </div>
+
+    <textarea id="code-editor" rows="20" cols="80" spellcheck="false"></textarea>
+
+    <button id="submit-btn">Submit Code</button>
+
+    <h2>Result</h2>
+    <pre id="result-output">Submit your code to see the result.</pre>
+
+    <script src="script.js"></script>
+    <script>
+        loadProblemDetails();
+    </script>
+</body>
+</html>
