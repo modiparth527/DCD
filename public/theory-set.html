@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory: Sets - Daily Coding Dose</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header><h1>Daily Coding Dose</h1><nav><a href="/">Home</a><a href="/topics.html">Theory Topics</a><a href="/problems-all.html">All Problems</a></nav></header>
+    <main>
+        <h2>Theory: Sets</h2>
+        <section class="theory-content">
+            <h3>Definition</h3>
+            <p>A Set is an abstract data type that represents a collection of **unique** elements, with no particular order. Think of it like a mathematical set – an element is either in the set or it isn't, and duplicates are automatically disregarded.</p>
+            <h3>Key Characteristics</h3>
+            <ul>
+                <li><strong>Uniqueness:</strong> A set cannot contain duplicate elements. If you try to add an element that already exists, the set remains unchanged.</li>
+                <li><strong>Unordered (Usually):</strong> While some implementations might preserve insertion order (like JavaScript's `Set` or Python's `dict` keys since 3.7), the core concept of a set doesn't guarantee any specific order of elements during iteration.</li>
+                <li><strong>Membership Testing:</strong> Sets are highly optimized for checking if a specific element is present in the collection.</li>
+            </ul>
+            <h3>Core Operations</h3>
+            <ul>
+                <li><strong>Add:</strong> Adds an element to the set. If the element is already present, the set doesn't change.</li>
+                <li><strong>Remove (or Delete):</strong> Removes a specific element from the set.</li>
+                <li><strong>Contains (or Has):</strong> Checks if an element exists within the set. Returns true or false.</li>
+                <li><strong>Size:</strong> Returns the number of unique elements in the set.</li>
+                <li><strong>Set Operations (Common):</strong>
+                    <ul>
+                        <li><em>Union:</em> Returns a new set containing all elements from two sets.</li>
+                        <li><em>Intersection:</em> Returns a new set containing only elements present in *both* sets.</li>
+                        <li><em>Difference:</em> Returns a new set containing elements from the first set that are *not* in the second set.</li>
+                        <li><em>Subset/Superset Check:</em> Determines if one set is contained within another.</li>
+                    </ul>
+                </li>
+            </ul>
+            <h3>Implementation</h3>
+            <p>Sets are very often implemented using **Hash Tables** internally. This allows them to achieve fast average time complexity for core operations.</p>
+            <ul>
+                <li>The elements themselves act as the keys in the underlying hash table.</li>
+                <li>The hash table structure enables efficient checking for existence (add, contains, remove).</li>
+            </ul>
+            <h3>Time Complexity (Typical Hash Table Implementation - Average Case)</h3>
+            <ul>
+                <li><strong>Add:</strong> O(1)</li>
+                <li><strong>Remove:</strong> O(1)</li>
+                <li><strong>Contains:</strong> O(1)</li>
+                <li><strong>Size:</strong> O(1) (if size is tracked), otherwise O(n)</li>
+                <li><strong>Set Operations (Union, Intersection, Difference):</strong> Generally O(m + n) or O(min(m, n)) depending on the operation and implementation, where m and n are the sizes of the sets involved.</li>
+            </ul>
+             <h3>Time Complexity - Worst Case</h3>
+            <p>(Due to hash collisions in the underlying hash table)</p>
+            <ul>
+                 <li><strong>Add:</strong> O(n)</li>
+                <li><strong>Remove:</strong> O(n)</li>
+                <li><strong>Contains:</strong> O(n)</li>
+            </ul>
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Removing Duplicates:</strong> Quickly get a collection of unique items from a list or array.</li>
+                <li><strong>Membership Testing:</strong> Efficiently checking if an item has been seen before (e.g., in algorithms involving graphs or arrays).</li>
+                <li><strong>Mathematical Set Operations:</strong> Performing union, intersection, difference etc.</li>
+                <li>Finding unique elements between collections.</li>
+            </ul>
+            <h3>Example (JavaScript - using Set)</h3>
+            <pre><code>// Creating a Set
+let mySet = new Set();
+
+// Adding elements
+mySet.add(1);
+mySet.add(5);
+mySet.add("hello");
+mySet.add(5); // Adding duplicate - ignored
+console.log(mySet); // Output: Set(3) { 1, 5, 'hello' }
+
+// Checking for existence
+console.log(mySet.has(1)); // Output: true
+console.log(mySet.has('world')); // Output: false
+
+// Getting the size
+console.log(mySet.size); // Output: 3
+
+// Removing elements
+mySet.delete(5);
+console.log(mySet.has(5)); // Output: false
+console.log(mySet.size); // Output: 2
+
+// Creating from an array (removes duplicates)
+let numbers = [2, 3, 4, 4, 2, 1, 3];
+let uniqueNumbers = new Set(numbers);
+console.log(uniqueNumbers); // Output: Set(4) { 2, 3, 4, 1 }
+
+// Iterating (order generally matches insertion order in JS)
+uniqueNumbers.forEach(num => {
+  console.log(num * 10);
+});
+// Output (order might vary in other languages): 20, 30, 40, 10
+
+for (let item of uniqueNumbers) {
+  console.log(item);
+}
+// Output: 2, 3, 4, 1</code></pre>
+            <hr>
+            <p>Practice problems involving Sets:</p>
+            <a href="/problems-topic.html?topic=Set" class="topic-button">Go to Set Problems</a>
+        </section>
+    </main>
+    <footer><p>© 2024 Daily Coding Dose</p></footer>
+</body>
+</html>

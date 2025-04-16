@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory: Stacks - Daily Coding Dose</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header><h1>Daily Coding Dose</h1><nav><a href="/">Home</a><a href="/topics.html">Theory Topics</a><a href="/problems-all.html">All Problems</a></nav></header>
+    <main>
+        <h2>Theory: Stacks</h2>
+        <section class="theory-content">
+            <h3>Definition</h3>
+            <p>A Stack is a linear data structure that follows the **LIFO (Last-In, First-Out)** principle. Imagine a stack of plates: you can only add a new plate to the top, and you can only remove the topmost plate. The last plate placed on the stack is the first one to be removed.</p>
+            <h3>Core Operations</h3>
+            <ul>
+                <li><strong>Push:</strong> Adds an element to the top of the stack.</li>
+                <li><strong>Pop:</strong> Removes and returns the element from the top of the stack. An error or specific value might be returned if the stack is empty.</li>
+                <li><strong>Peek (or Top):</strong> Returns the element at the top of the stack without removing it. An error or specific value might be returned if the stack is empty.</li>
+                <li><strong>isEmpty:</strong> Checks if the stack contains any elements. Returns true if empty, false otherwise.</li>
+                <li><strong>Size:</strong> Returns the number of elements currently in the stack.</li>
+            </ul>
+            <h3>Implementation</h3>
+            <p>Stacks can be easily implemented using underlying data structures:</p>
+            <ul>
+                <li><strong>Arrays/Dynamic Arrays (Lists):</strong> Using a dynamic array (like JavaScript arrays or Python lists) is common. <code>push</code> corresponds to appending to the end, <code>pop</code> corresponds to removing from the end. These operations are typically amortized O(1).</li>
+                <li><strong>Linked Lists:</strong> A linked list can also implement a stack. <code>push</code> involves adding a new node at the head, and <code>pop</code> involves removing the head node. These are typically O(1).</li>
+            </ul>
+            <h3>Time Complexity (Typical Implementations)</h3>
+            <ul>
+                <li><strong>Push:</strong> O(1) (Amortized O(1) for dynamic arrays)</li>
+                <li><strong>Pop:</strong> O(1)</li>
+                <li><strong>Peek:</strong> O(1)</li>
+                <li><strong>isEmpty:</strong> O(1)</li>
+                <li><strong>Size:</strong> O(1)</li>
+                <li><strong>Search (by value):</strong> O(n) - Stacks are not designed for efficient searching.</li>
+            </ul>
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Function Call Stack:</strong> Programming languages use a stack to manage function calls (storing local variables, return addresses).</li>
+                <li><strong>Undo/Redo Features:</strong> Storing previous states to allow undoing actions.</li>
+                <li><strong>Expression Evaluation:</strong> Converting infix expressions to postfix (Reverse Polish Notation) and evaluating postfix expressions.</li>
+                <li><strong>Parsing:</strong> Used in algorithms for parsing syntax (like checking for balanced parentheses).</li>
+                <li><strong>Backtracking Algorithms:</strong> Managing states in algorithms that explore possibilities (e.g., depth-first search, maze solving).</li>
+                <li><strong>Browser History (Forward/Back):</strong> Conceptually similar, though often more complex in practice.</li>
+            </ul>
+            <h3>Example (JavaScript - using Array)</h3>
+            <pre><code>let stack = []; // Use an array as a stack
+
+// Push elements
+stack.push('A');
+stack.push('B');
+stack.push('C');
+console.log(stack); // Output: ['A', 'B', 'C']
+
+// Peek (access the last element)
+console.log(stack[stack.length - 1]); // Output: C
+
+// Pop elements
+let topElement = stack.pop();
+console.log(topElement); // Output: C
+console.log(stack); // Output: ['A', 'B']
+
+topElement = stack.pop();
+console.log(topElement); // Output: B
+console.log(stack); // Output: ['A']
+
+// Check if empty
+console.log(stack.length === 0); // Output: false
+
+stack.pop(); // Remove 'A'
+console.log(stack.length === 0); // Output: true
+
+// Trying to pop an empty stack
+let emptyPop = stack.pop();
+console.log(emptyPop); // Output: undefined
+            </code></pre>
+            <hr>
+            <p>Practice problems involving Stacks:</p>
+            <a href="/problems-topic.html?topic=Stack" class="topic-button">Go to Stack Problems</a>
+        </section>
+    </main>
+    <footer><p>© 2024 Daily Coding Dose</p></footer>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory: Two Pointers - Daily Coding Dose</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Daily Coding Dose</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/topics.html">Theory Topics</a>
+            <a href="/problems-all.html">All Problems</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Theory: Two Pointers</h2>
+        <section class="theory-content">
+            <h3>Definition</h3>
+            <p>
+                The Two Pointers technique is an algorithmic pattern primarily used on sorted arrays or linked lists.
+                It involves using two integer indices or pointers (usually named <code>left</code> and <code>right</code>, or <code>slow</code> and <code>fast</code>)
+                that traverse the data structure in a coordinated way to efficiently solve problems that might otherwise require nested loops.
+            </p>
+
+            <h3>Common Scenarios & Movement Patterns</h3>
+            <ul>
+                <li>
+                    <strong>Opposite Ends Converging:</strong>
+                    <ul>
+                        <li>Pointers start at the beginning (<code>left = 0</code>) and the end (<code>right = length - 1</code>) of a sorted array.</li>
+                        <li>They move towards each other (<code>left++</code>, <code>right--</code>) based on conditions related to the sum or comparison of elements at the pointers.</li>
+                        <li>Used for: Finding pairs that sum to a target (like Two Sum II), checking for palindromes, reversing arrays/strings in-place.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Fast and Slow Pointers (Same Direction, Different Speeds):</strong>
+                    <ul>
+                        <li>Both pointers start at or near the beginning.</li>
+                        <li>One pointer (<code>fast</code>) moves ahead more steps per iteration than the other (<code>slow</code>).</li>
+                        <li>Used for: Detecting cycles in linked lists (Floyd's Tortoise and Hare), finding the middle of a linked list, finding duplicates in certain array problems.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Two Pointers for Subarrays/Substrings (Sliding Window variation):</strong>
+                    <ul>
+                        <li>One pointer (often <code>right</code>) expands a window or subarray/substring.</li>
+                        <li>Another pointer (often <code>left</code>) contracts the window from the beginning when a certain condition is met or violated.</li>
+                        <li>Used for: Finding the longest substring without repeating characters, minimum size subarray sum, etc. (This overlaps heavily with the Sliding Window pattern).</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Advantages</h3>
+            <ul>
+                <li><strong>Efficiency:</strong> Often reduces time complexity from O(n^2) (using nested loops) to O(n) (linear time) because each element is typically visited or processed only once or twice by the pointers.</li>
+                <li><strong>Space Complexity:</strong> Usually very space-efficient, often achieving O(1) auxiliary space complexity as it modifies data in-place or only uses a few variables for pointers.</li>
+            </ul>
+
+            <h3>Example (Opposite Ends Converging - Check Palindrome String)</h3>
+            <pre><code>function isPalindrome(s) {
+  // Preprocess: remove non-alphanumeric and convert to lowercase
+  const cleaned = s.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+  let left = 0;
+  let right = cleaned.length - 1;
+
+  while (left &lt; right) {
+    if (cleaned[left] !== cleaned[right]) {
+      return false; // Characters don't match
+    }
+    left++;  // Move left pointer forward
+    right--; // Move right pointer backward
+  }
+
+  return true; // All characters matched
+}
+
+console.log(isPalindrome("A man, a plan, a canal: Panama")); // Output: true
+console.log(isPalindrome("race a car")); // Output: false
+console.log(isPalindrome(" ")); // Output: true (empty string after cleaning is a palindrome)</code></pre>
+
+            <h3>Example (Fast/Slow Pointers - Detect Cycle in Linked List)</h3>
+            <pre><code>// Assuming a ListNode class:
+class ListNode {
+  constructor(val, next = null) {
+    this.val = val;
+    this.next = next;
+  }
+}
+
+function hasCycle(head) {
+  if (!head || !head.next) {
+    return false; // No cycle if list is empty or has only one node
+  }
+
+  let slow = head;
+  let fast = head;
+
+  while (fast !== null &amp;&amp; fast.next !== null) {
+    slow = slow.next;       // Slow moves 1 step
+    fast = fast.next.next;  // Fast moves 2 steps
+
+    if (slow === fast) {
+      return true; // Pointers met, cycle detected!
+    }
+  }
+
+  return false; // Fast reached the end, no cycle
+}
+
+// Example Usage:
+// let node1 = new ListNode(3);
+// let node2 = new ListNode(2);
+// let node3 = new ListNode(0);
+// let node4 = new ListNode(-4);
+// node1.next = node2;
+// node2.next = node3;
+// node3.next = node4;
+// node4.next = node2; // Cycle back to node2
+// console.log(hasCycle(node1)); // Output: true</code></pre>
+
+            <hr>
+            <p>Practice Two Pointers problems:</p>
+            <a href="/problems-topic.html?topic=Two%20Pointers" class="topic-button">Go to Two Pointers Problems</a>
+        </section>
+    </main>
+    <footer>
+        <p>© 2024 Daily Coding Dose</p>
+    </footer>
+</body>
+</html>

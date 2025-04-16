@@ -4,57 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Theory: Strings - Daily Coding Dose</title>
-    <link rel="stylesheet" href="style.css"> <!-- Link to your existing stylesheet -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <h1>Daily Coding Dose</h1>
-        <nav>
-            <a href="/">Problem List</a>
-            <a href="/topics.html">Theory Topics</a>
-        </nav>
+        <nav> <a href="/">Home</a> <a href="/topics.html">Theory Topics</a> <a href="/problems-all.html">All Problems</a> </nav>
     </header>
     <main>
         <h2>Theory: Strings</h2>
-
         <section class="theory-content">
             <h3>Definition</h3>
-            <p>
-                A string is a fundamental data type representing a sequence of characters. These characters can include letters, numbers, symbols, and whitespace. Strings are typically used to store and manipulate textual data in programming.
-            </p>
-
+            <p> A string is a fundamental data type representing a sequence of characters. These characters can include letters, numbers, symbols, and whitespace. Strings are typically used to store and manipulate textual data in programming. </p>
             <h3>Key Characteristics</h3>
             <ul>
                 <li><strong>Sequence of Characters:</strong> Strings maintain the order of their characters. The first character is at index 0, the second at index 1, and so on.</li>
                 <li><strong>Immutability (Commonly):</strong> In many popular languages (like Java, Python, JavaScript, C#), strings are <strong>immutable</strong>. This means that once a string object is created, its content cannot be changed. Operations that appear to modify a string (like concatenation or replacing characters) actually create and return a *new* string object. Some languages (like C/C++) handle strings as mutable arrays of characters.</li>
-                <li><strong>Indexed Access:</strong> Individual characters within a string can often be accessed using their numerical index, similar to arrays (e.g., `myString[0]`).</li>
+                <li><strong>Indexed Access:</strong> Individual characters within a string can often be accessed using their numerical index, similar to arrays (e.g., <code>myString[0]</code>).</li>
                 <li><strong>Length Property:</strong> Strings usually have a property or method to determine their length (the number of characters they contain).</li>
                 <li><strong>Character Encoding:</strong> Underlyingly, characters are represented by numerical codes (like ASCII or Unicode/UTF-8). This is usually handled transparently by the language but can be important for internationalization or complex text processing.</li>
             </ul>
-
             <h3>Time Complexity (Big O Notation)</h3>
-            <p>Complexity can vary slightly based on language implementation, especially regarding immutability.</p>
-            <ul>
-                <li><strong>Access Character (by index):</strong> Typically O(1) - Constant time.</li>
-                <li><strong>Get Length:</strong> Typically O(1) - Constant time (length is often stored).</li>
-                <li><strong>Concatenation (e.g., `str1 + str2`):</strong> O(n + m) - Linear time, where n and m are the lengths of the strings being combined. This is because a new string must be created, and characters from both original strings need to be copied into it (due to immutability). Repeated concatenation in a loop can be inefficient (O(n^2)). String builder/buffer classes can optimize this.</li>
-                <li><strong>Search (for a character or simple substring):</strong> Typically O(n) or O(n*m) - Linear time (n = length of string, m = length of substring). More advanced algorithms exist but simple search often involves checking parts of the string.</li>
-                <li><strong>Slicing/Substring Creation:</strong> Often O(k) - Linear time, where k is the length of the substring being created, as a new string object is usually formed.</li>
-            </ul>
-
+             <ul> <li><strong>Access Character (by index):</strong> Typically O(1) - Constant time.</li> <li><strong>Get Length:</strong> Typically O(1) - Constant time (length is often stored).</li> <li><strong>Concatenation (e.g., <code>str1 + str2</code>):</strong> O(n + m) - Linear time, where n and m are the lengths of the strings being combined. This is because a new string must be created, and characters from both original strings need to be copied into it (due to immutability). Repeated concatenation in a loop can be inefficient (O(n^2)). String builder/buffer classes can optimize this.</li> <li><strong>Search (for a character or simple substring):</strong> Typically O(n) or O(n*m) - Linear time (n = length of string, m = length of substring). More advanced algorithms exist but simple search often involves checking parts of the string.</li> <li><strong>Slicing/Substring Creation:</strong> Often O(k) - Linear time, where k is the length of the substring being created, as a new string object is usually formed.</li> </ul>
             <h3>Common Operations & Use Cases</h3>
-            <ul>
-                <li>Storing names, sentences, messages, code, file paths, URLs, configuration data.</li>
-                <li>Reading user input and displaying output.</li>
-                <li>Parsing text files (logs, CSV, JSON, XML).</li>
-                <li>String manipulation: searching, replacing, splitting, joining, changing case.</li>
-                <li>Data validation (e.g., checking email format).</li>
-                <li>Used as keys in dictionaries/hash maps.</li>
-            </ul>
-
+            <ul> <li>Storing names, sentences, messages, code, file paths, URLs, configuration data.</li> <li>Reading user input and displaying output.</li> <li>Parsing text files (logs, CSV, JSON, XML).</li> <li>String manipulation: searching, replacing, splitting, joining, changing case.</li> <li>Data validation (e.g., checking email format).</li> <li>Used as keys in dictionaries/hash maps.</li> </ul>
             <h3>Example (JavaScript)</h3>
-            <pre><code>
-// Creating strings
+            <pre><code>// Creating strings
 let greeting = "Hello";
 let target = 'World';
 let language = `JavaScript`; // Template literal
@@ -82,18 +57,13 @@ console.log(message.includes("World")); // Output: true
 console.log(message.indexOf("o")); // Output: 4 (index of the first 'o')
 console.log(message.slice(0, 5)); // Output: Hello (extracts from index 0 up to, but not including, 5)
 let words = message.split(" "); // Splits by space, returns ["Hello,", "World!"]
-console.log(words);
-            </code></pre>
-
-            <hr> <!-- Separator -->
-            <p>Practice working with strings:</p>
-            <!-- Ensure the topic matches a tag defined in server.js -->
-            <a href="/index.html?topic=String" class="topic-button">Go to String Problems</a>
-
+console.log(words);</code></pre>
+            <hr>
+            <p>Practice working with String problems:</p>
+            <!-- Link to the TOPIC problems page -->
+            <a href="/problems-topic.html?topic=String" class="topic-button">Go to String Problems</a>
         </section>
     </main>
-    <footer>
-        <p>© 2023 Daily Coding Dose</p>
-    </footer>
+    <footer><p>© 2024 Daily Coding Dose</p></footer>
 </body>
 </html>

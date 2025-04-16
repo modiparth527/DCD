@@ -1,185 +1,487 @@
-/* style.css */
+/* style.css (Complete Reset Version) */
+
+/* --- Global & Layout --- */
+:root {
+    --primary-color: #3498db; /* Light Blue */
+    --secondary-color: #2c3e50; /* Dark Blue-Gray */
+    --light-gray: #ecf0f1;
+    --medium-gray: #bdc3c7;
+    --dark-gray: #7f8c8d;
+    --bg-color: #f4f7f6;
+    --content-bg: #ffffff;
+    --success-bg: #d4edda;
+    --success-border: #c3e6cb;
+    --success-text: #155724;
+    --error-bg: #f8d7da;
+    --error-border: #f5c6cb;
+    --error-text: #721c24;
+    --warning-bg: #fff3cd;
+    --warning-border: #ffeeba;
+    --warning-text: #856404;
+    --code-bg: #e8eaed;
+    --pre-bg: #f8f9fa;
+    --pre-border: #dee2e6;
+    --link-color: var(--primary-color);
+    --link-hover-color: #2980b9; /* Darker blue */
+    --button-bg: var(--primary-color);
+    --button-hover-bg: var(--link-hover-color);
+    --button-disabled-bg: var(--medium-gray);
+    --green-button-bg: #2ecc71;
+    --green-button-hover-bg: #27ae60;
+    --border-color: #e0e0e0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     line-height: 1.6;
-    padding: 20px;
-    max-width: 900px;
-    margin: 0 auto; /* Center the content */
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-size: 16px;
+}
+
+header {
+    background-color: var(--secondary-color);
+    color: var(--light-gray);
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header h1 {
+    margin: 0;
+    text-align: center;
+    font-size: 2em;
+    font-weight: 600;
+}
+
+nav {
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+nav a {
+    color: var(--light-gray);
+    text-decoration: none;
+    margin: 0 1rem;
+    padding: 0.3rem 0;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom 0.2s ease, color 0.2s ease;
+}
+nav a:hover, nav a:focus {
+    border-bottom: 2px solid var(--primary-color);
+    color: #fff;
+    outline: none;
+}
+
+main {
+    max-width: 1200px;
+    width: 95%;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: var(--content-bg);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    flex-grow: 1; /* Allow main content to fill available space */
+}
+
+footer {
+    text-align: center;
+    margin-top: auto; /* Push footer to bottom */
+    padding: 1rem;
+    color: var(--dark-gray);
+    background-color: #eaeaec;
+    font-size: 0.9em;
+    border-top: 1px solid var(--border-color);
+}
+
+h2 {
+    color: var(--secondary-color);
+    border-bottom: 2px solid #eee; /* Lighter border */
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.6em;
+}
+
+h3 {
+    color: #34495e; /* Slightly lighter blue-gray */
+    margin-top: 1.8rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.3em;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+ul {
+    margin-bottom: 1rem;
+    padding-left: 20px; /* Standard indentation */
+}
+
+li {
+     margin-bottom: 0.5rem;
+}
+
+code {
+    font-family: Consolas, 'Courier New', Courier, monospace;
+    background-color: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.95em;
+    word-break: break-word;
+}
+
+pre {
+    background-color: var(--pre-bg);
+    border: 1px solid var(--pre-border);
+    border-radius: 5px;
+    padding: 1rem;
+    overflow-x: auto; /* Enable horizontal scroll for long lines */
+    font-size: 0.95em;
+    white-space: pre-wrap; /* Wrap lines but preserve whitespace */
+    word-wrap: break-word;
+}
+pre code { /* Code inside pre doesn't need extra background/padding */
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit; /* Use pre's font size */
+}
+
+
+button {
+    background-color: var(--button-bg);
+    color: white;
+    padding: 0.6em 1.2em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 0.8rem;
+    font-size: 1em;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+button:hover:not(:disabled) {
+    background-color: var(--button-hover-bg);
+    transform: translateY(-1px); /* Slight lift effect */
+}
+button:disabled {
+    background-color: var(--button-disabled-bg);
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 a {
-    color: #007bff;
+    color: var(--link-color);
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 a:hover {
+    color: var(--link-hover-color);
     text-decoration: underline;
 }
 
+
+hr.section-divider {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(44, 62, 80, 0.25), rgba(0, 0, 0, 0));
+    margin: 2.5rem 0;
+}
+
+/* --- Homepage Specific (index.html) --- */
+.intro-section {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background-color: #eaf2f8;
+    border-radius: 8px;
+}
+.intro-section h2 {
+    border-bottom: none;
+    margin-bottom: 1rem;
+    font-size: 1.8em;
+}
+.intro-section p {
+    font-size: 1.1em;
+    color: #555;
+}
+
+.homepage-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+}
+.homepage-section {
+    flex: 1;
+    min-width: 300px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: #fdfdfd;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+.homepage-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.4em;
+}
+.homepage-section h3 a { color: inherit; }
+.homepage-section h3 a:hover { color: var(--primary-color); text-decoration: none; }
+.homepage-section p {
+    flex-grow: 1; /* Allow paragraphs to push button down */
+    color: #444;
+}
+
+.topic-link-list-brief {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    text-align: left;
+    display: inline-block;
+}
+.topic-link-list-brief li { margin-bottom: 0.4rem; }
+.topic-link-list-brief li a { font-weight: 500; }
+
+#problem-count-info {
+    font-style: italic;
+    color: #666;
+    margin: 1rem 0;
+}
+
+.homepage-button { /* Reusing button style */
+    margin-top: auto; /* Pushes button to bottom of flex section */
+    align-self: center; /* Center button horizontally */
+}
+
+/* --- Problem List Pages (problems-all.html, problems-topic.html) --- */
 #problem-list {
     list-style: none;
     padding: 0;
 }
 #problem-list li {
-    margin-bottom: 10px;
-    font-size: 1.1em;
+    border-bottom: 1px solid #eee;
+    padding: 0.8rem 0.5rem;
+}
+#problem-list li:last-child { border-bottom: none; }
+#problem-list li a { font-weight: 500; font-size: 1.1em; }
+
+/* --- Problem Detail Layout (problem.html) --- */
+.problem-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px 40px; /* Row gap, Column gap */
+}
+.problem-details {
+    flex: 1 1 500px; /* Grow, Shrink, Basis */
+}
+.code-section {
+    flex: 1.3 1 500px; /* Give slightly more space */
 }
 
-#problem-description, #problem-examples {
-    background-color: #f8f9fa;
-    border: 1px solid #eee;
-    padding: 15px;
-    margin-bottom: 20px;
-    white-space: pre-wrap; /* Preserve whitespace formatting in description/examples */
+/* --- Problem Detail Elements --- */
+#problem-description { color: #444; }
+#problem-examples div.example-case { /* Target the div we added */
+    background-color: var(--pre-bg);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    border: 1px solid var(--pre-border);
 }
- #problem-examples div {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px dashed #ccc;
- }
-#problem-examples div:last-child {
-    border-bottom: none;
+#problem-examples p { margin: 0.3rem 0; }
+#problem-examples code {
+    display: block; /* Code block */
+    margin-top: 0.3rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    padding: 0.5rem; /* Add padding to code inside examples */
+    background-color: #e0e4e8; /* Slightly darker than page code bg */
 }
 
-
-#code-editor {
-    width: 95%;
-    display: block;
-    margin-top: 10px;
-    font-family: monospace;
-    font-size: 1rem;
+/* --- Code Editor & Controls --- */
+.controls {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+#language-select {
+    padding: 0.5rem;
+    border-radius: 5px;
     border: 1px solid #ccc;
-    padding: 10px;
+    background-color: #fff;
+}
+#code-editor {
+    width: 100%; /* Use full width of its container */
+    border: 1px solid #ccc;
+    font-family: Consolas, 'Courier New', Courier, monospace;
+    font-size: 1em; /* Adjust as needed */
+    line-height: 1.4;
+    margin-top: 0.5rem;
+    padding: 0.8rem;
+    border-radius: 5px;
+    resize: vertical;
+    min-height: 350px;
+    outline: none; /* Remove browser default outline */
+    transition: border-color 0.2s ease;
+}
+#code-editor:focus {
+     border-color: var(--primary-color); /* Highlight border on focus */
+     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); /* Subtle glow */
+}
+#code-editor:disabled {
+    background-color: #f8f8f8;
+    opacity: 0.7;
 }
 
-button {
-    padding: 10px 15px;
-    margin-top: 15px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    border-radius: 4px;
-}
-button:hover {
-    background-color: #218838;
-}
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
+/* --- Result Output --- */
 #result-output {
-    background-color: #f8f9fa;
-    border: 1px solid #eee;
-    padding: 15px;
-    margin-top: 15px;
-    white-space: pre-wrap; /* Keep formatting */
-    font-family: monospace;
-    min-height: 50px;
-    border-left: 5px solid #ccc; /* Default border */
+    margin-top: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    min-height: 80px;
+    padding: 1rem;
+    background-color: var(--pre-bg);
 }
-
-#result-output.status-Accepted {
-    border-left-color: green;
-    color: green;
-}
-
+#result-output.status-Accepted { background-color: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
 #result-output.status-Wrong_Answer,
 #result-output.status-Runtime_Error,
-#result-output.status-Time_Limit_Exceeded,
- #result-output.status-Error { /* Catch-all error class */
-    border-left-color: red;
-    color: red;
-}
+#result-output.status-Error, /* Catch-all for frontend/network errors */
+#result-output.status-Server_Error { background-color: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+#result-output.status-Time_Limit_Exceeded { background-color: var(--warning-bg); border-color: var(--warning-border); color: var(--warning-text); }
 
-h1, h2 {
-     border-bottom: 1px solid #eee;
-     padding-bottom: 5px;
-     margin-top: 30px;
-}
-
-/* public/style.css - Add styles for topic link list */
-
+/* --- Topics Page List (topics.html) --- */
 .topic-link-list {
     list-style: none;
     padding: 0;
-    margin-top: 20px;
+    margin-top: 1.5rem;
 }
-
 .topic-link-list li {
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-}
-
-.topic-link-list li:hover {
-    background-color: #f0f0f0; /* Slight highlight on hover */
-}
-
-
-.topic-link-list li a {
-    display: block; /* Make the whole list item clickable */
-    padding: 15px;
-    text-decoration: none;
-    color: #007bff;
-    font-size: 1.1em;
-}
-
-.topic-link-list li a:hover {
-    text-decoration: none; /* No underline needed as whole item highlights */
-    color: #0056b3;
-}
-
-/* Style for the content section within individual theory pages */
-.theory-content {
-    background-color: #fff; /* White background for content */
-    padding: 20px;
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
-    /* box-shadow: 0 2px 5px rgba(0,0,0,0.1); Optional shadow */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.topic-link-list li:hover {
+    background-color: #fdfdfd;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+}
+.topic-link-list li a {
+    display: block;
+    padding: 1rem;
+    font-size: 1.2em;
+    font-weight: 500;
 }
 
+/* --- Theory Pages (theory-*.html) --- */
+.theory-content {
+    background-color: var(--content-bg); /* Match main background */
+    padding: 0; /* Remove extra padding if main has it */
+}
 .theory-content h3 {
-    margin-top: 25px; /* Add space above subheadings */
-    margin-bottom: 10px;
     border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-    color: #333;
+    padding-bottom: 0.4rem;
 }
-.theory-content h3:first-of-type {
-    margin-top: 0; /* No top margin for the very first h3 */
+.theory-content ul { margin-left: 20px; margin-bottom: 1rem; }
+.theory-content li { margin-bottom: 0.6rem; }
+.theory-content hr { margin: 2rem 0; border: 0; border-top: 1px solid #eee; }
+
+.topic-button { /* Re-style for theory pages if needed, or use button */
+    display: inline-block;
+    background-color: var(--green-button-bg); /* Green */
+    color: white;
+    padding: 0.6em 1.2em;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-top: 1.5rem;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+.topic-button:hover {
+    background-color: var(--green-button-hover-bg); /* Darker green */
+    text-decoration: none;
+    color: white;
 }
 
-
-.theory-content ul {
-    margin-left: 20px; /* Indent lists */
-    margin-bottom: 15px;
+/* --- Optional 404 Page Basic Style --- */
+.not-found-container {
+    text-align: center;
+    padding: 40px 20px;
 }
-.theory-content li {
-     margin-bottom: 8px; /* Space between list items */
+.not-found-container h1 {
+    font-size: 3em;
+    color: var(--dark-gray);
 }
-
-.theory-content pre {
-    background-color: #f8f9fa; /* Light background for code blocks */
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 15px;
-    overflow-x: auto; /* Allow horizontal scrolling for long code lines */
-    font-size: 0.95em;
+.not-found-container p {
+    font-size: 1.2em;
+    color: #555;
 }
 
-.theory-content code {
-     font-family: Consolas, 'Courier New', monospace; /* Monospace font */
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    main {
+        width: 98%;
+        padding: 20px;
+        margin: 15px auto;
+    }
+    header h1 {
+        font-size: 1.6em;
+    }
+    nav a {
+        margin: 0 0.5rem;
+    }
+    h2 {
+        font-size: 1.4em;
+    }
+    h3 {
+        font-size: 1.2em;
+    }
+    .problem-layout {
+        flex-direction: column; /* Stack sections vertically */
+    }
+    .code-section {
+        margin-top: 30px; /* Add space when stacked */
+    }
+    #code-editor {
+        min-height: 250px; /* Reduce min height on smaller screens */
+    }
 }
 
-/* Ensure the button at the end of theory page has space */
-.theory-content .topic-button {
-    margin-top: 25px;
+/* --- CodeMirror Specific Styles --- */
+#code-editor-container {
+    border: 1px solid #ccc; /* Add a border around the editor */
+    border-radius: 5px;     /* Match other elements */
+    margin-top: 0.5rem;     /* Adjust spacing like the old textarea */
+    /* min-height: 350px; */ /* Set min-height here if needed */
 }
 
-.theory-content hr {
-    margin: 30px 0;
-    border: 0;
-    border-top: 1px solid #eee;
+/* CodeMirror's main element - adjust font size etc. if needed */
+#code-editor-container .cm-editor {
+    /* height: 400px; */ /* Fixed height */
+    min-height: 350px; /* Or minimum height */
+    font-size: 1em; /* Ensure font size matches expectation */
+    border-radius: 5px; /* Ensure inner editor also gets rounded corners */
+}
+
+/* Ensure editor is visible when disabled during submit */
+#code-editor-container .cm-editor.cm-focused {
+    outline: none; /* Remove default focus outline if desired */
 }

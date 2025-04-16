@@ -3,68 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Coding Dose - Problem</title> <!-- Title will be updated by JS -->
+    <title>Daily Coding Dose - Problem</title> <!-- Title updated by JS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- === ADDED Header and Navigation === -->
     <header>
         <h1>Daily Coding Dose</h1>
         <nav>
-            <a href="/">Problem List</a>
-            <a href="/topics.html">Theory Topics</a> <!-- Added link to topics page -->
-            <!-- Add other nav links if needed -->
+            <a href="/">Home</a>
+            <a href="/topics.html">Theory Topics</a>
+            <a href="/problems-all.html">All Problems</a>
         </nav>
     </header>
-
-    <!-- === ADDED Main Wrapper with Layout Class === -->
-    <!-- Using the layout from the earlier example to split details and code -->
     <main class="problem-layout">
-
-        <!-- === Section for Problem Details === -->
         <section class="problem-details">
-            <h2 id="problem-title">Loading...</h2> <!-- Changed h1 to h2 for better hierarchy under header h1 -->
-            <h3>Description</h3> <!-- Changed div to h3 -->
-            <p id="problem-description">...</p> <!-- Changed div to p for semantic meaning -->
-
-            <h3>Examples</h3> <!-- Changed h2 to h3 -->
-            <div id="problem-examples">
-                 <!-- Examples will be loaded here -->
-            </div>
+            <h2 id="problem-title">Loading...</h2>
+            <h3>Description</h3>
+            <p id="problem-description">Loading description...</p>
+            <h3>Examples</h3>
+            <div id="problem-examples"><p>Loading examples...</p></div>
         </section>
-
-        <!-- === Section for Code Editor and Results === -->
         <section class="code-section">
-             <h3>Your Code</h3> <!-- Added heading -->
-             <div class="controls"> <!-- Renamed class from editor-controls to controls for consistency -->
+             <h3>Your Code</h3>
+             <div class="controls">
                  <label for="language-select">Language:</label>
-                 <select id="language-select" disabled> <!-- Added disabled attribute initially -->
+                 <select id="language-select" disabled>
                      <option value="javascript">JavaScript</option>
                      <option value="python">Python</option>
-                     <!-- Add more languages here if supported by backend/frontend -->
                  </select>
              </div>
-
-             <textarea id="code-editor" rows="20" cols="80" spellcheck="false" placeholder="Write your code here..." disabled></textarea> <!-- Added placeholder and disabled attribute -->
-
-             <button id="submit-btn" disabled>Submit Code</button> <!-- Added disabled attribute -->
-
-             <h3>Result</h3> <!-- Changed h2 to h3 -->
+             <div id="code-editor-container"></div>
+             <button id="submit-btn" disabled>Submit Code</button>
+             <h3>Result</h3>
              <pre id="result-output">Submit your code to see the result.</pre>
          </section>
-
     </main>
-
-    <!-- === ADDED Footer (for consistency) === -->
-    <footer>
-        <p>© 2023 Daily Coding Dose</p>
-    </footer>
-
-    <script src="script.js"></script>
-    <script>
-        // === MODIFIED Way to Call loadProblemDetails ===
-        // Use DOMContentLoaded to ensure all elements exist before the script runs
-        document.addEventListener('DOMContentLoaded', loadProblemDetails);
-    </script>
+    <footer><p>© 2024 Daily Coding Dose</p></footer>
+    <script type="module" src="/script.js"></script>
+    
 </body>
 </html>

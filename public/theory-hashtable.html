@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory: Hash Tables - Daily Coding Dose</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header><h1>Daily Coding Dose</h1><nav><a href="/">Home</a><a href="/topics.html">Theory Topics</a><a href="/problems-all.html">All Problems</a></nav></header>
+    <main>
+        <h2>Theory: Hash Tables (Hash Maps)</h2>
+        <section class="theory-content">
+            <h3>Definition</h3>
+            <p>A Hash Table (also known as a Hash Map, Dictionary, or Associative Array in different languages) is a data structure that implements an associative array abstract data type, a structure that can map keys to values. A hash table uses a hash function to compute an index, also called a hash code, into an array of buckets or slots, from which the desired value can be found.</p>
+            <h3>Key Characteristics</h3>
+            <ul>
+                <li><strong>Key-Value Pairs:</strong> Stores data as pairs, where each unique key maps to a specific value.</li>
+                <li><strong>Hash Function:</strong> A function that takes a key as input and produces an integer index (hash code) representing a bucket/slot in an underlying array. A good hash function distributes keys uniformly across the buckets.</li>
+                <li><strong>Buckets/Slots:</strong> An array where values (or references to values/key-value pairs) are stored based on the computed hash index.</li>
+                <li><strong>Collision Handling:</strong> Since different keys might hash to the same index (a collision), strategies are needed to handle this. Common methods include:
+                    <ul>
+                        <li><em>Separate Chaining:</em> Each bucket stores a linked list (or other data structure) of all key-value pairs that hash to that index.</li>
+                        <li><em>Open Addressing (Probing):</em> If a slot is occupied, the algorithm probes for the next available slot according to a defined sequence (e.g., linear probing, quadratic probing, double hashing).</li>
+                    </ul>
+                </li>
+                <li><strong>Load Factor:</strong> The ratio of the number of stored elements to the number of buckets. Hash tables often resize (increase the number of buckets and rehash elements) when the load factor exceeds a certain threshold to maintain performance.</li>
+            </ul>
+            <h3>Time Complexity (Big O Notation) - Average Case</h3>
+            <p>(Assuming a good hash function and effective collision handling)</p>
+            <ul>
+                <li><strong>Insertion:</strong> O(1)</li>
+                <li><strong>Deletion:</strong> O(1)</li>
+                <li><strong>Search (Lookup by Key):</strong> O(1)</li>
+            </ul>
+             <h3>Time Complexity - Worst Case</h3>
+            <p>(Occurs with many collisions, e.g., all keys hash to the same bucket in separate chaining)</p>
+            <ul>
+                <li><strong>Insertion:</strong> O(n)</li>
+                <li><strong>Deletion:</strong> O(n)</li>
+                <li><strong>Search (Lookup by Key):</strong> O(n)</li>
+            </ul>
+            <h3>Common Operations & Use Cases</h3>
+            <ul>
+                <li>Implementing caches (e.g., mapping URLs to page content).</li>
+                <li>Database indexing.</li>
+                <li>Counting frequencies of items (e.g., word counts).</li>
+                <li>Tracking seen elements to detect duplicates or cycles.</li>
+                <li>Associating properties with objects (like JavaScript objects).</li>
+                <li>Implementing Sets.</li>
+            </ul>
+             <h3>Example (JavaScript - using Objects and Map)</h3>
+            <pre><code>// Using plain JavaScript Objects (keys are implicitly strings)
+let userScores = {};
+userScores["Alice"] = 100;
+userScores["Bob"] = 85;
+userScores["alice"] = 90; // Note: Different key if case matters
+
+console.log(userScores["Bob"]); // Output: 85
+console.log("Alice" in userScores); // Output: true
+console.log("Charlie" in userScores); // Output: false
+
+delete userScores["alice"]; // Remove entry
+
+// Using the Map object (allows keys of any type, preserves insertion order)
+let fruitColors = new Map();
+fruitColors.set("Apple", "Red");
+fruitColors.set("Banana", "Yellow");
+fruitColors.set(123, "NumberKey"); // Key can be a number
+
+console.log(fruitColors.get("Banana")); // Output: Yellow
+console.log(fruitColors.has("Apple")); // Output: true
+console.log(fruitColors.size); // Output: 3
+
+fruitColors.delete(123); // Remove by key
+
+// Iterate over Map entries
+for (let [key, value] of fruitColors) {
+    console.log(`${key}: ${value}`);
+}</code></pre>
+            <hr>
+            <p>Practice problems using Hash Tables:</p>
+            <a href="/problems-topic.html?topic=HashTable" class="topic-button">Go to Hash Table Problems</a>
+        </section>
+    </main>
+    <footer><p>© 2024 Daily Coding Dose</p></footer>
+</body>
+</html>

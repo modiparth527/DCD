@@ -1,304 +1,429 @@
-// server.js
+// server.js (Corrected - Combined Output Parsing)
 
-// 1. Import the Express library
+// Load environment variables from .env file at the very beginning
+require('dotenv').config();
+
 const express = require('express');
-const path = require('path'); // Needed to help find our frontend files
-const fs = require('fs'); // Needed for the INSECURE code execution
-const { exec } = require('child_process'); // Needed for the INSECURE code execution
+const path = require('path');
+const fs = require('fs').promises; // Make sure to use promises version
+const os = require('os');
+const Docker = require('dockerode');
+// --- MongoDB Added ---
+const { MongoClient, ObjectId } = require('mongodb'); // Import MongoClient and ObjectId
+// --- End MongoDB Added ---
 
-// 2. Create an instance of the Express application
 const app = express();
-const PORT = 3000; // The "port" number our server will listen on
 
-// 3. Middleware: These run for every request
-app.use(express.json()); // Allow the server to understand incoming JSON data (like our submission)
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files (HTML, CSS, JS) from the 'public' folder
+// --- Environment Variables ---
+const MONGODB_URI = process.env.MONGODB_URI; // Loaded from .env
+const DB_NAME = process.env.DB_NAME || 'dailyCodingDose'; // Default DB name if not in .env
+const PORT = process.env.PORT || 3000; // Use PORT from env or default to 3000
+const NODE_ENV = process.env.NODE_ENV || 'development'; // Default to development
 
-// --- Hardcoded Data (Instead of a Database for now) ---
+if (!MONGODB_URI) {
+    console.error("FATAL ERROR: MONGODB_URI environment variable is not set. Please create a .env file or set the environment variable.");
+    process.exit(1); // Exit if connection string is missing
+}
 
-const problems = [
-     {
-        id: '1',
-        title: "Two Sum",
-        description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. Assume exactly one solution exists.",
-        examples: [
-            { input: "nums = [2,7,11,15], target = 9", output: "[0,1]" },
-            { input: "nums = [3,2,4], target = 6", output: "[1,2]" }
-        ],
-        defaultCode: {
-            javascript: `function twoSum(nums, target) {\n  // Write your code here\n  // Example: return [0, 1];};`,
-            python: `from typing import List\n\ndef twoSum(nums: List[int], target: int) -> List[int]:\n    # Write your Python code here\n    pass`
-        },
-        tags: ["Array", "HashTable"]
-    },
-     {
-        id: '2',
-        title: "Reverse String",
-        description: "Write a function that reverses a string. The input string is given as an array of characters s.",
-        examples: [
-            { input: 's = ["h","e","l","l","o"]', output: '["o","l","l","e","h"]' }
-        ],
-        defaultCode: {
-             javascript: `function reverseString(s) {\n  // Write your code here\n  // Example: s.reverse();\n};`,
-             python: `from typing import List\n\ndef reverseString(s: List[str]) -> None:\n    """\n    Do not return anything, modify s in-place instead.\n    """\n    # Write your Python code here\n    pass`
-            
-        },
-        tags: ["String", "Array", "Two Pointers"]
+const docker = new Docker();
+
+// --- MongoDB Client Setup ---
+let db; // Variable to hold the database connection instance
+const mongoClient = new MongoClient(MONGODB_URI);
+
+async function connectToDb() {
+    try {
+        await mongoClient.connect(); // Establish connection
+        db = mongoClient.db(DB_NAME); // Get database instance using DB_NAME
+        console.log(`Successfully connected to MongoDB database: ${DB_NAME}`);
+
+        // Optional: Ensure indexes exist for common queries (improves performance)
+        await db.collection('problems').createIndex({ tags: 1 });
+        await db.collection('problems').createIndex({ id: 1 }, { unique: true, sparse: true });
+        console.log("Database indexes ensured for 'problems' collection.");
+
+    } catch (err) {
+        console.error("!!! Failed to connect to MongoDB", err);
+        process.exit(1); // Exit the application if DB connection fails on startup
     }
-];
+}
+// --- End MongoDB Setup ---
 
-// Very simple test cases - doesn't handle complex input/output formats well yet
+
+// --- Middleware ---
+app.use(express.json()); // Parse incoming JSON request bodies
+
+// --- Serve Static Files ---
+const staticPath = NODE_ENV === 'production' ? 'dist' : 'public';
+console.log(`Serving static files from ./${staticPath} (NODE_ENV=${NODE_ENV})`);
+app.use(express.static(path.join(__dirname, staticPath)));
+
+
+// --- Data ---
+// Keep test cases hardcoded for now. Could be moved to DB later.
 const testCases = {
-    '1': [ // Two Sum
-        { inputArgs: [[2, 7, 11, 15], 9], expectedOutput: '[0,1]' }, // Output as JSON string for simple comparison
-        { inputArgs: [[3, 2, 4], 6], expectedOutput: '[1,2]' },
-        { inputArgs: [[3, 3], 6], expectedOutput: '[0,1]' },
-    ],
-    '2': [ // Reverse String (NOTE: This function modifies the input array in place in JS)
-        { inputArgs: [['h','e','l','l','o']], expectedOutput: '["o","l","l","e","h"]' },
-        { inputArgs: [['H','a','n','n','a','h']], expectedOutput: '["h","a","n","n","a","H"]' }
-    ]
+    '1': [ { inputArgs: [[2, 7, 11, 15], 9], expectedOutput: '[0,1]' }, { inputArgs: [[3, 2, 4], 6], expectedOutput: '[1,2]' }, { inputArgs: [[3, 3], 6], expectedOutput: '[0,1]' } ],
+    '2': [ { inputArgs: [['h','e','l','l','o']], expectedOutput: '["o","l","l","e","h"]' }, { inputArgs: [['H','a','n','n','a','h']], expectedOutput: '["h","a","n","n","a","H"]' } ],
+    '3': [ { inputArgs: ["()"], expectedOutput: 'true' }, { inputArgs: ["()[]{}"], expectedOutput: 'true' }, { inputArgs: ["(]"], expectedOutput: 'false' }, { inputArgs: ["([)]"], expectedOutput: 'false' }, { inputArgs: ["{[]}"], expectedOutput: 'true' }, { inputArgs: ["]"], expectedOutput: 'false'} ],
+    '4': [ { inputArgs: [[1,2,3,1]], expectedOutput: 'true' }, { inputArgs: [[1,2,3,4]], expectedOutput: 'false' }, { inputArgs: [[1,1,1,3,3,4,3,2,4,2]], expectedOutput: 'true' }, { inputArgs: [[]], expectedOutput: 'false' } ],
 };
 
-// --- API Endpoints (URLs the frontend will talk to) ---
+// --- API Endpoints ---
 
-// GET /api/problems - Send a list of available problems
-app.get('/api/problems', (req, res) => {
-    const problemList = problems.map(p => ({ id: p.id, title: p.title }));
-    res.json(problemList); // Send back the list as JSON data
-});
-
-// GET /api/problems - Send a list of available problems (optionally filtered by topic)
-app.get('/api/problems/:id', (req, res) => {
-
-    const problemId = req.params.id; // Get the ID from the URL (e.g., '/api/problems/1')    
-    const problem = problems.find(id => id.id === problemId);
-    
-    if (problem) {
-        // Only send needed info, not test cases
-        const { description, examples, defaultCode, title, id } = problem;
-        res.json({ description, examples, defaultCode, title, id });
-    } else {
-        res.status(404).json({ error: 'Problem not found' }); // Send a 404 error if ID is invalid
+// GET /api/problems - List problems
+app.get('/api/problems', async (req, res) => {
+    console.log(`API REQ: GET /api/problems | Query:`, req.query);
+    if (!db) {
+        console.error("API ERROR: Database not available for /api/problems");
+        return res.status(503).json({ error: "Service temporarily unavailable. Database not connected." });
     }
-    // const requestedTopic = req.query.topic; // Get 'topic' from query string (e.g., /api/problems?topic=Array)
-    // console.log("Requessssssssted topic", requestedTopic)
-    // let allProblems = problems; // Get all problem objects
-
-    // let filteredProblems;
-    // if (requestedTopic) {
-    //     // Filter problems: check if the problem's tags array (case-insensitive) includes the requested topic (case-insensitive)
-    //     const lowerCaseTopic = requestedTopic.toLowerCase();
-    //     filteredProblems = allProblems.filter(p =>
-    //         p.tags && Array.isArray(p.tags) && p.tags.some(tag => tag.toLowerCase() === lowerCaseTopic)
-    //     );
-    // } else {
-    //     // If no topic specified, return all problems
-    //     filteredProblems = allProblems;
-    // }
-
-    // // Only send back the ID and title for the list view
-    // const problemList = filteredProblems.map(p => ({ id: p.id, title: p.title }));
-    // res.json(problemList); // Send back the (potentially filtered) list as JSON
-});
-
-// POST /api/submit - Handle JS and Python submissions (INSECURE EXECUTION)
-app.post('/api/submit', async (req, res) => {
-    // 1. Get data from the frontend request
-    const { problemId, language, code } = req.body;
-
-    // 2. Basic Validation (Check if problem exists, code is provided)
-    if (!problems[problemId] || !testCases[problemId]) {
-        return res.status(404).json({ status: "Error", output: "Problem or test cases not found." });
-    }
-    if (!code) {
-         return res.status(400).json({ status: "Error", output: "No code provided." });
-    }
-    // *** NEW: Check if the requested language is one we currently support ***
-    if (language !== 'javascript' && language !== 'python') {
-        return res.status(400).json({ status: "Error", output: `Language '${language}' not supported yet.` });
-    }
-
-    // 3. Prepare variables (some will be set based on the language)
-    const tests = testCases[problemId];
-    let finalResult = { status: "Accepted", output: "All test cases passed!" }; // Assume success initially
-
-    let fileExtension;          // Will be '.js' or '.py'
-    let tempFileNameBase = `temp_submission_${Date.now()}`; // Base name for the temp file
-    let tempFilePath;           // Full path to the temp file
-    let runCommand;             // A function that creates the command string (e.g., 'node file.js ...' or 'python file.py ...')
-    let runnerCode = '';        // The code (including user's code + our wrapper) to write to the temp file
-
-    // *** NEW: Determine function name based on problemId (same as before, but needed for both languages) ***
-    let functionName = '';
-     if (problemId === '1') functionName = 'twoSum';
-     else if (problemId === '2') functionName = 'reverseString';
-     // Add more mappings if you add problems
-    if (!functionName) {
-        // If we forgot to map a problemId, send an error
-        return res.status(500).json({status: "Error", output: "Server error: Could not determine function name for problem."});
-    }
-
-
-    // 4. *** NEW: Use a switch (or if/else if) to set up language-specific things ***
-    switch (language) {
-        case 'javascript':
-            fileExtension = '.js';
-            tempFilePath = path.join(__dirname, tempFileNameBase + fileExtension);
-            // Create the full JS code to execute (User Code + Runner Code)
-            runnerCode = `
-                ${code} // User's code is pasted here
-                // Our JS runner code starts
-                const testInputArgs = JSON.parse(process.argv[2]); // Get input from command line arg
-                try {
-                    let result;
-                    if ("${functionName}" === "reverseString") { // Handle inplace modification case
-                        let inputArgCopy = [...testInputArgs[0]];
-                        ${functionName}(inputArgCopy);
-                        result = inputArgCopy;
-                    } else { // Standard function call
-                        result = ${functionName}(...testInputArgs);
-                    }
-                    console.log(JSON.stringify(result !== undefined ? result : null)); // Print result as JSON
-                } catch (error) {
-                    console.error("ExecutionError:", error.message); // Print errors to stderr
-                    process.exit(1); // Exit with error status
-                }`;
-            // Define how to run this file
-            runCommand = (inputJson) => `node "${tempFilePath}" "${inputJson.replace(/"/g, '\\"')}"`;
-            break; // End of JavaScript case
-
-        case 'python': // *** THIS IS THE NEWLY ADDED CASE ***
-            fileExtension = '.py';
-            tempFilePath = path.join(__dirname, tempFileNameBase + fileExtension);
-            // Create the full Python code to execute (User Code + Runner Code)
-            runnerCode = `
-# Python standard libraries needed by the runner
-import sys
-import json
-from copy import deepcopy
-
-# --- User's code starts ---
-${code}
-# --- User's code ends ---
-
-# --- Our Python runner code starts ---
-if __name__ == "__main__": # Standard Python entry point check
-    try:
-        # Get the JSON input string from the command line argument
-        raw_args = sys.argv[1]
-        try:
-            test_input_args = json.loads(raw_args) # Parse JSON input
-        except json.JSONDecodeError:
-             corrected_raw_args = raw_args.replace('\\\\"', '"') # Handle potential shell escaping
-             test_input_args = json.loads(corrected_raw_args)
-
-        # Make a copy of input args in case the user function modifies them
-        args_copy = deepcopy(test_input_args)
-
-        result = None # Initialize result variable
-        if "${functionName}" == "reverseString": # Handle inplace modification case
-            ${functionName}(args_copy[0]) # Call function (modifies args_copy[0])
-            result = args_copy[0] # Result is the modified list
-        else: # Standard function call
-            result = ${functionName}(*args_copy) # Unpack list elements as arguments
-
-        # Print the result as a JSON string to standard output
-        print(json.dumps(result if result is not None else None))
-
-    except Exception as e:
-        # If any error occurs during execution, print it to standard error
-        print(f"ExecutionError: {e}", file=sys.stderr)
-        sys.exit(1) # Exit with a non-zero code to indicate failure
-`;
-            // Define how to run this file (use 'python' command)
-            runCommand = (inputJson) => `python "${tempFilePath}" "${inputJson.replace(/"/g, '\\"')}"`;
-            break; // End of Python case
-
-        // If language was something else (though we checked earlier), do nothing
-        // default:
-        //     // This shouldn't be reached due to the check at the start
-        //     break;
-    } // End of switch statement
-
-
-    // 5. Execute the code (This part is mostly the same, but uses the 'runCommand' variable)
+    const requestedTopic = req.query.topic;
+    const query = {};
+    const projection = { _id: 1, id: 1, title: 1 };
     try {
-        // Write the appropriate runnerCode to the temporary file
-        fs.writeFileSync(tempFilePath, runnerCode);
+        if (requestedTopic) {
+            query.tags = { $regex: new RegExp(`^${requestedTopic}$`, 'i') };
+            console.log(`API LOG: Filtering DB query for topic: "${requestedTopic}"`);
+        } else {
+            console.log(`API LOG: No topic filter, fetching all problems from DB.`);
+        }
+        const problemsFromDb = await db.collection('problems').find(query).project(projection).toArray();
+        console.log(`API LOG: Found ${problemsFromDb.length} problems from DB query.`);
+        const problemList = problemsFromDb.map(p => ({
+            id: p.id || p._id.toString(),
+            title: p.title || "Untitled Problem"
+        }));
+        res.json(problemList);
+    } catch (err) {
+        console.error("API ERROR: Failed to fetch problems from database:", err);
+        res.status(500).json({ error: "Failed to retrieve problems due to a server error." });
+    }
+});
 
-        // Loop through each test case for the problem
+// GET /api/problems/:id - Get single problem
+app.get('/api/problems/:id', async (req, res) => {
+    const requestedId = req.params.id;
+    console.log(`API REQ: GET /api/problems/${requestedId}`);
+    if (!db) {
+        console.error("API ERROR: Database not available for /api/problems/:id");
+        return res.status(503).json({ error: "Service temporarily unavailable. Database not connected." });
+    }
+    let queryFilter;
+    if (ObjectId.isValid(requestedId)) {
+        console.log("API LOG: Treating requested ID as potential ObjectId.");
+        queryFilter = { $or: [{ _id: new ObjectId(requestedId) }, { id: requestedId }] };
+    } else {
+        console.log("API LOG: Treating requested ID as custom string ID.");
+        queryFilter = { id: requestedId };
+    }
+    try {
+        const problem = await db.collection('problems').findOne(queryFilter);
+        if (problem) {
+            console.log(`API LOG: Found problem in DB: ${problem.title}`);
+            const responseProblem = { ...problem, id: problem.id || problem._id.toString() };
+            delete responseProblem._id;
+            res.json(responseProblem);
+        } else {
+            console.log(`API LOG: Problem ID ${requestedId} not found in DB.`);
+            res.status(404).json({ error: 'Problem not found' });
+        }
+    } catch (err) {
+        console.error(`API ERROR: Failed to fetch problem ${requestedId} from database:`, err);
+        res.status(500).json({ error: "Failed to retrieve problem details due to a server error." });
+    }
+});
+
+// POST /api/submit - Handle code execution
+app.post('/api/submit', async (req, res) => {
+    const { problemId, language, code } = req.body;
+    const MAX_EXECUTION_TIME_MS = 15000;
+    console.log(`API REQ: POST /api/submit | Problem: ${problemId} | Lang: ${language}`);
+
+    // --- Validation ---
+    if (!testCases[problemId]) {
+        console.error(`API ERROR: Test cases for Problem ${problemId} not found.`);
+        return res.status(404).json({ status: "Error", output: "Test cases for problem not found." });
+    }
+    if (!code) { return res.status(400).json({ status: "Error", output: "No code provided." }); }
+
+    // --- Determine Image, File Names, Function Name ---
+    let imageName, codeFileName, runnerScript;
+    if (language === 'javascript') {
+        imageName = 'dailycodedose/execution-node:latest'; codeFileName = 'user_code.js'; runnerScript = 'runner.js';
+    } else if (language === 'python') {
+        imageName = 'dailycodedose/execution-python:latest'; codeFileName = 'user_code.py'; runnerScript = 'runner.py';
+    } else {
+        return res.status(400).json({ status: "Error", output: `Language '${language}' not supported.` });
+    }
+
+    let functionName = '';
+    const functionNameMap = { '1': 'twoSum', '2': 'reverseString', '3': 'isValid', '4': 'containsDuplicate' };
+    functionName = functionNameMap[problemId];
+    if (!functionName) { return res.status(500).json({status: "Error", output: "Server config error: Cannot determine function name."}); }
+    console.log(`API LOG: Using function name "${functionName}" for execution.`);
+
+    // --- Setup Execution ---
+    const tests = testCases[problemId];
+    let tempDir = null;
+    let container = null; // Define container here to ensure it's accessible in finally
+
+    try {
+        tempDir = await fs.mkdtemp(path.join(os.tmpdir(), `dcd-${problemId}-${language}-`));
+        await fs.writeFile(path.join(tempDir, codeFileName), code);
+        const inputJsonPath = path.join(tempDir, 'input.json'); // Define path for input.json
+        console.log(`API LOG: Created temp dir: ${tempDir}`);
+
         for (let i = 0; i < tests.length; i++) {
             const test = tests[i];
-            // Convert the test case input arguments to a JSON string
-            const inputJson = JSON.stringify(test.inputArgs);
-            // Get the correct command (e.g., 'node ...' or 'python ...')
-            const commandToRun = runCommand(inputJson);
+            // Write input.json for the current test case
+            const inputJson = JSON.stringify({ functionName, inputArgs: test.inputArgs });
+            await fs.writeFile(inputJsonPath, inputJson);
+            console.log(`API LOG: Running test ${i + 1}/${tests.length} for problem ${problemId}`);
 
-            // Execute the command in a separate process
-            // Use a Promise to wait for the asynchronous 'exec' to finish
-            await new Promise((resolve, reject) => {
-                exec(commandToRun, { timeout: 2000 }, (error, stdout, stderr) => { // 2 second limit
-                    // Check if the process terminated with an error
-                    if (error) {
-                        if (error.signal === 'SIGTERM' || (error.killed && error.signal === null)) { // Check for timeout
-                            return reject({ status: "Time Limit Exceeded", output: `Test ${i + 1}: Execution timed out.` });
+            const containerConfig = {
+                Image: imageName,
+                Cmd: [language === 'javascript' ? 'node' : 'python', runnerScript],
+                WorkingDir: '/usr/src/app',
+                User: 'appuser',
+                HostConfig: {
+                    Binds: [
+                        `${tempDir}:/sandbox:ro`,
+                    ],
+                    Memory: 128 * 1024 * 1024,
+                    CpuQuota: 50000,
+                    CpuPeriod: 100000,
+                    NetworkMode: 'none',
+                    ReadonlyRootfs: true,
+                    Tmpfs: {'/tmp': 'rw,noexec,nosuid,size=5m'},
+                    SecurityOpt: ['no-new-privileges'],
+                    CapDrop: ['ALL'],
+                },
+                Tty: false, AttachStdout: true, AttachStderr: true,
+            };
+
+            // Reset variables for this test case
+            container = null;
+            let timeoutHit = false;
+            // --- *** Use ONE variable for combined output *** ---
+            let combinedOutput = '';
+            // --- *** END CHANGE *** ---
+
+            // Run container with timeout
+            try {
+                container = await docker.createContainer(containerConfig);
+                const stream = await container.attach({ stream: true, stdout: true, stderr: true });
+
+                // --- *** MODIFIED Stream Handling: Capture ALL output *** ---
+                stream.on('data', (chunk) => {
+                    // Append chunk payload (stripping 8-byte header) to combined output
+                    try { // Add try-catch around buffer operations
+                         if (chunk.length > 8) {
+                            combinedOutput += chunk.slice(8).toString('utf8');
+                         } else {
+                            // Handle cases where chunk might be smaller than header (less likely but possible)
+                            console.warn(`API WARN: Received small chunk (length ${chunk.length}), appending raw: ${chunk.toString('utf8')}`);
+                            combinedOutput += chunk.toString('utf8');
+                         }
+                    } catch (bufferError) {
+                         console.error("API ERROR: Error processing stream chunk buffer:", bufferError);
+                         // Append raw chunk as fallback
+                         combinedOutput += chunk.toString('utf8');
+                    }
+                });
+                // --- *** END MODIFIED SECTION *** ---
+
+                const streamEndPromise = new Promise(resolve => stream.on('end', resolve));
+
+                await container.start();
+                console.log(`API LOG: Container started for test ${i + 1}. Waiting...`);
+
+                const waitPromise = container.wait({ condition: 'not-running' });
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => {
+                        timeoutHit = true;
+                        console.warn(`API WARN: Timeout triggered for test ${i + 1}.`);
+                        reject(new Error('Execution timed out'));
+                    }, MAX_EXECUTION_TIME_MS)
+                );
+
+                await Promise.race([waitPromise, timeoutPromise]);
+                console.log(`API LOG: Container wait/timeout finished for test ${i + 1}. Timeout hit: ${timeoutHit}`);
+
+                await Promise.race([
+                     streamEndPromise,
+                     new Promise(resolve => setTimeout(resolve, 200)) // Max 200ms wait for stream end
+                ]);
+                 console.log(`API LOG: Docker stream ended or timed out waiting for end for test ${i+1}.`);
+
+            } catch (waitError) {
+                console.error(new Date(), `API ERROR: Container run/wait failed for test ${i+1}. Timeout flag: ${timeoutHit}`, waitError);
+                if (timeoutHit) {
+                    if (container) { try { await container.stop({ t: 1 }); } catch (stopErr) { console.warn(`API WARN: Failed to stop timed-out container: ${stopErr.message}`); } }
+                    throw { status: "Time Limit Exceeded", output: `Test ${i + 1}: Execution exceeded ${MAX_EXECUTION_TIME_MS / 1000}s.` };
+                } else {
+                    throw { status: "Runtime Error", output: `Test ${i + 1}: Container execution failed: ${waitError.message}` };
+                }
+            } finally {
+                 if (container) {
+                    try {
+                        console.log(`API LOG: Attempting removal of container for test ${i+1}...`);
+                        await container.remove({ force: true });
+                        console.log(`API LOG: Removed container for test ${i+1}.`);
+                        container = null;
+                    } catch (rmErr) {
+                        if (!rmErr.message || (rmErr.statusCode !== 404 && !rmErr.message.includes("No such container"))) {
+                             console.error(`API ERROR: Failed to remove container for test ${i+1}:`, rmErr);
+                        } else {
+                             console.log(`API LOG: Container for test ${i+1} already removed or not found.`);
                         }
-                        // For other errors, use stderr if available, otherwise error message
-                        return reject({ status: "Runtime Error", output: `Test ${i + 1}: ${stderr || error.message}` });
+                        container = null;
                     }
-                    // *** MODIFIED: Check stderr even if no 'error' object ***
-                    // Python often prints tracebacks to stderr on runtime errors without 'error' necessarily being set
-                    if (stderr && language === 'python') { // Be more strict with Python stderr
-                         return reject({ status: "Runtime Error", output: `Test ${i + 1}: ${stderr}` });
-                    } else if (stderr) { // Log stderr for JS just in case, but don't fail automatically
-                         console.warn(`Test ${i+1} (${language}) stderr: ${stderr}`);
+                 }
+            }
+
+            // --- *** MODIFIED Log Processing: Search Combined Output *** ---
+            console.log(`API LOG: Combined container output for test ${i+1}:\n---\n${combinedOutput}\n---`);
+
+            let stdoutJson = null; // To store the parsed success JSON
+            let stderrJson = null; // To store the parsed error JSON
+
+            const outputLines = combinedOutput.trim().split('\n'); // Split combined output into lines
+
+            // Iterate through lines to find the LAST valid success or error JSON payload
+            for (const line of outputLines) {
+                const trimmedLine = line.trim();
+                // Check if line looks like a JSON object before attempting to parse
+                if (trimmedLine.startsWith('{') && trimmedLine.endsWith('}')) {
+                    try {
+                        const p = JSON.parse(trimmedLine);
+
+                        // Check for SUCCESS format
+                        if (p && p.status === 'success' && p.output !== undefined) {
+                            stdoutJson = p;
+                            stderrJson = null; // Clear potential error found on previous lines
+                            console.log(`API LOG: Found potential success JSON line: ${trimmedLine}`);
+                        }
+                        // Check for ERROR format
+                        else if (p && p.status === 'error' && (p.type !== undefined || p.message !== undefined || p.error !== undefined)) {
+                            stderrJson = p;
+                            stdoutJson = null; // Clear potential success found on previous lines
+                            console.error(`API ERROR: Found potential error JSON line: ${trimmedLine}`);
+                        }
+                    } catch (e) {
+                        // Ignore lines that look like JSON but fail to parse
+                        console.debug(`API DEBUG: Ignoring line that failed JSON parse: "${trimmedLine}", Error: ${e.message}`);
                     }
+                } else {
+                     // Optional: Log lines that don't even look like JSON objects
+                     // console.debug(`API DEBUG: Ignoring non-object line: "${trimmedLine}"`);
+                }
+            }
 
+            // Now, check the results based on the *last* valid JSON found
+            if (stderrJson) {
+                // Found a valid error JSON as the last result
+                console.error(`API ERROR: Final decision - Runner reported error for test ${i+1}:`, stderrJson);
+                const errMsg = stderrJson.message || stderrJson.error || 'Unknown runner error';
+                const errType = stderrJson.type || 'Error';
+                throw { status: "Runtime Error", output: `Test ${i + 1} (${errType}): ${errMsg}` };
+            }
+            else if (stdoutJson) {
+                 // Found a valid success JSON as the last result
+                console.log(`API LOG: Final decision - Parsed success JSON.`);
+                const actual = JSON.stringify(stdoutJson.output);
+                const expected = test.expectedOutput;
+                console.log(`API LOG: Test ${i+1} Expected: ${expected}, Got: ${actual}`);
+                if (actual !== expected) {
+                    throw { status: "Wrong Answer", output: `Test ${i + 1}:\nInput: ${JSON.stringify(test.inputArgs)}\nExpected: ${expected}\nGot: ${actual}`};
+                }
+                // If output matches, continue
+            } else {
+                // If NO valid success or error JSON was found anywhere in the output
+                console.error(`API ERROR: Final decision - No valid JSON output (status: success/error) identified in combined logs for test ${i+1}.`);
+                const rawErrorOutput = combinedOutput.trim() || '(No logs captured)';
+                throw { status: "Runtime Error", output: `Test ${i + 1}: No valid output received from execution environment. Logs:\n${rawErrorOutput}` };
+            }
+            // --- *** END MODIFIED Log Processing *** ---
 
-                    // Compare the standard output (result) with the expected output
-                    const actualOutput = stdout.trim(); // Remove extra whitespace
-                    if (actualOutput !== test.expectedOutput) {
-                        // If outputs don't match, reject with "Wrong Answer"
-                        return reject({
-                            status: "Wrong Answer",
-                            output: `Test ${i + 1}:\nInput: ${inputJson}\nExpected: ${test.expectedOutput}\nGot: ${actualOutput}`
-                        });
-                    }
+            console.log(`API LOG: Test ${i + 1} Passed.`);
+        } // End test loop
 
-                    // If we got here, this test case passed! Resolve the promise.
-                    resolve();
-                }); // End of exec callback
-            }); // End of Promise for one test case
-        } // End of loop through test cases
+        // If loop finishes without throwing error
+        console.log(`API LOG: Submission Accepted for problem ${problemId}.`);
+        res.json({ status: "Accepted", output: "All test cases passed!" });
 
-        // If the loop completes without any rejected promises, all tests passed!
-        res.json(finalResult); // Send { status: "Accepted", ... }
+    } catch (error) {
+        // Handle errors thrown from within the loop (Wrong Answer, TLE, Runtime Error) or setup errors
+        console.error(`API ERROR: Submission processing failed. Status: ${error.status || 'Unknown'}, Output: ${error.output || error.message}`);
+        if (!error.status) { console.error("Full error object:", error); }
 
-    } catch (failedResultOrError) {
-        // This 'catch' block catches any rejected promise from the loop (WA, TLE, RE)
-        // or any synchronous error before the loop
-        if (failedResultOrError.status) { // If it's our structured error object
-             res.json(failedResultOrError); // Send the specific failure result (WA, TLE, RE)
-        } else { // If it's some other unexpected server error
-             console.error("Unexpected server error during execution:", failedResultOrError);
-             res.status(500).json({ status: "Server Error", output: "An internal error occurred." });
+        if (error.status && error.output) {
+            res.status(200).json({ status: error.status, output: error.output }); // Send structured error as 200 OK
+        } else {
+            // Fallback for unexpected server errors
+            res.status(500).json({ status: "Server Error", output: `An internal error occurred processing the submission.` });
         }
     } finally {
-        // 6. Cleanup (This part is the same)
-        // Always try to delete the temporary file after execution finishes or fails
-        if (tempFilePath && fs.existsSync(tempFilePath)) {
-            fs.unlink(tempFilePath, (err) => {
-                if (err) console.error(`Error deleting temp file ${tempFilePath}:`, err);
-            });
+        // Cleanup temp directory
+        if (tempDir) {
+            try {
+                await fs.rm(tempDir, { recursive: true, force: true });
+                console.log(`API LOG: Cleaned up temp dir: ${tempDir}`);
+            } catch (cleanupError) {
+                console.error(`API ERROR: Failed to cleanup temp dir ${tempDir}:`, cleanupError);
+            }
         }
+        container = null; // Ensure container ref is cleared
     }
+}); // End POST /api/submit
+
+
+// --- HTML Serving Routes ---
+app.get('/', (req, res) => { res.sendFile(path.join(__dirname, staticPath, 'index.html')); });
+const staticHtmlFiles = ['problems-all', 'problems-topic', 'topics', 'problem'];
+staticHtmlFiles.forEach(page => { app.get(`/${page}.html`, (req, res, next) => {
+     const filePath = path.join(__dirname, staticPath, `${page}.html`);
+     fs.access(filePath).then(() => res.sendFile(filePath)).catch(() => next());
+    });
+});
+app.get('/theory-:topicName.html', (req, res, next) => {
+    const topicName = req.params.topicName;
+    if (!/^[a-zA-Z0-9\-]+$/.test(topicName)) { return next(); }
+    const filePath = path.join(__dirname, staticPath, `theory-${topicName}.html`);
+    fs.access(filePath, fs.constants.R_OK).then(() => res.sendFile(filePath)).catch(() => next());
+});
+
+// --- Catch-all and 404 ---
+if (NODE_ENV === 'production') {
+    app.get('*', (req, res, next) => {
+        if (req.originalUrl.startsWith('/api/')) { return next(); }
+        console.log(`Serving ${staticPath}/index.html for unmatched route: ${req.originalUrl}`);
+        res.sendFile(path.join(__dirname, staticPath, 'index.html'));
+    });
+}
+app.use((req, res) => {
+    console.log(`WARN: 404 Not Found for route: ${req.originalUrl}`);
+    // Ensure 404.html exists in your static assets directory (public or dist)
+    const fourOhFourPath = path.join(__dirname, staticPath, '404.html');
+    fs.access(fourOhFourPath)
+      .then(() => res.status(404).sendFile(fourOhFourPath))
+      .catch(() => res.status(404).send("404 Not Found")); // Fallback text if 404.html is missing
 });
 
 
-// 4. Start the server and make it listen for requests
-app.listen(PORT, () => {
-    console.log(`Daily Coding Dose Server is running at http://localhost:${PORT}`);
-    console.log("Navigate to http://localhost:3000 in your browser to access Daily Coding Dose.");
-    console.warn("!!! WARNING: Code execution in this server is INSECURE and only for local testing. !!!");
+// --- Start Server ---
+connectToDb().then(() => {
+    app.listen(PORT, () => {
+        console.log(`------------------------------------------------------`);
+        console.log(`Daily Coding Dose Server running at http://localhost:${PORT}`);
+        console.log(`NODE_ENV: ${NODE_ENV}`);
+        console.log(`Serving static files from: ./${staticPath}`);
+        console.log(`Connected to MongoDB: ${DB_NAME}`);
+        console.log(`Ensure Docker daemon is running for code execution.`);
+        console.log(`Docker images should contain runner scripts in /usr/src/app`);
+        console.log(`------------------------------------------------------`);
+    });
+}).catch(err => {
+     console.error("!!! SERVER FAILED TO START due to DB connection error:", err);
+     process.exit(1);
 });

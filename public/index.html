@@ -3,43 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Coding Dose - Problems</title> <!-- Title is good -->
-    <link rel="stylesheet" href="style.css"> <!-- Link to CSS is correct -->
+    <title>Daily Coding Dose - Your DSA Hub</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- === ADDED Header and Navigation === -->
     <header>
         <h1>Daily Coding Dose</h1>
         <nav>
-            <a href="/">Problem List</a>
-            <a href="/topics.html">Theory Topics</a> <!-- Added link to topics page -->
-            <!-- Add other nav links if needed -->
+            <a href="/">Home</a>
+            <a href="/topics.html">Theory Topics</a>
+            <a href="/problems-all.html">All Problems</a>
         </nav>
     </header>
-
-    <!-- === ADDED Main Wrapper === -->
     <main>
-        <!-- === ADDED Dynamic H2 Heading (Targeted by script.js) === -->
-        <!-- This text will be replaced by script.js if a topic is specified -->
-        <h2>Available Problems</h2>
-
-        <!-- Your original problem list UL remains here -->
-        <ul id="problem-list">
-            <li>Loading problems...</li>
-        </ul>
+        <section class="intro-section">
+            <h2>One Stop Solution for Data Structures & Algorithms</h2>
+            <p>Master essential DSA concepts with clear, concise theory explanations and practice specifically chosen problems designed to build your expertise topic-by-topic.</p>
+            <p>Read the theory, then solidify your understanding by solving the curated problem sets.</p>
+        </section>
+        <hr class="section-divider">
+        <div class="homepage-layout">
+            <section class="homepage-section">
+                <h3><a href="/topics.html">Explore Theory Topics</a></h3>
+                <p>Deep dive into the fundamentals. Understand the 'why' and 'how' behind common data structures and algorithms.</p>
+                <ul class="topic-link-list-brief">
+                     <li><a href="/theory-array.html">Arrays</a></li>
+                     <li><a href="/theory-string.html">Strings</a></li>
+                     <li><a href="/theory-hashtable.html">Hash Tables</a></li>
+                     <li><a href="/theory-twopointers.html">Two Pointers</a></li>
+                     <li><a href="/theory-stack.html">Stacks</a></li>
+                     <li><a href="/theory-set.html">Sets</a></li>
+                     <li><a href="/topics.html"><em>(See All Topics...)</em></a></li>
+                </ul>
+                <a href="/topics.html" class="homepage-button">Go to Theory Section</a>
+            </section>
+            <section class="homepage-section">
+                <h3><a href="/problems-all.html">Practice Problems</a></h3>
+                <p>Test your knowledge with our curated problem sets. Start with the full list or dive into topic-specific challenges after reading the theory.</p>
+                <p id="problem-count-info">Loading problem count...</p>
+                <a href="/problems-all.html" class="homepage-button">View All Problems</a>
+            </section>
+        </div>
     </main>
-
-    <!-- === ADDED Footer (for consistency) === -->
-    <footer>
-        <p>© 2023 Daily Coding Dose</p>
-    </footer>
-
-
-    <script src="script.js"></script> <!-- Link to JavaScript is correct -->
+    <footer> <p>© 2024 Daily Coding Dose</p> </footer>
+    <script type="module" src="/script.js"></script>
     <script>
-        // === MODIFIED Way to Call loadProblemList ===
-        // Use DOMContentLoaded to ensure the H2 and UL elements exist before the script runs
-        document.addEventListener('DOMContentLoaded', loadProblemList);
+        // Fetches total problem count to display on homepage
+        async function displayProblemCount() {
+            const countElement = document.getElementById('problem-count-info'); if (!countElement) return;
+            try { const response = await fetch('/api/problems'); if (response.ok) { const problems = await response.json(); countElement.textContent = `Total Problems Available: ${problems.length}`; } else { countElement.textContent = 'Could not load problem count.';}
+            } catch (error) { console.error("Failed to fetch problem count:", error); countElement.textContent = 'Error loading problem count.'; }
+        }
+        document.addEventListener('DOMContentLoaded', displayProblemCount);
     </script>
 </body>
 </html>

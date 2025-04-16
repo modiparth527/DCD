@@ -10,26 +10,26 @@
     <header>
         <h1>Daily Coding Dose</h1>
         <nav>
-            <a href="/">Problem List</a>
+            <a href="/">Home</a>
             <a href="/topics.html">Theory Topics</a>
+            <a href="/problems-all.html">All Problems</a>
         </nav>
     </header>
     <main>
         <h2>Theory: Arrays</h2>
-
         <section class="theory-content">
             <h3>Definition</h3>
             <p>
                 Arrays are fundamental, linear data structures that store a collection of elements,
                 typically of the same data type, in contiguous (adjacent) memory locations.
-                Think of them like a numbered list of boxes, where each box holds one item and has
-                a unique number (the index) starting from 0.
+                Think of them like a numbered list of boxes, where each box holds one item
+                and has a unique number (the index) starting from 0.
             </p>
 
             <h3>Key Characteristics</h3>
             <ul>
                 <li><strong>Fixed or Dynamic Size:</strong> Depending on the programming language, arrays might have a fixed size determined at creation (like in C/Java) or be dynamic, allowing them to grow or shrink (like Python lists or JavaScript arrays).</li>
-                <li><strong>Indexed Access:</strong> Elements are accessed directly using their numerical index (e.g., `myArray[0]`, `myArray[5]`).</li>
+                <li><strong>Indexed Access:</strong> Elements are accessed directly using their numerical index (e.g., <code>myArray[0]</code>, <code>myArray[5]</code>).</li>
                 <li><strong>Contiguous Memory:</strong> Elements are stored one after another in memory, which allows for efficient iteration and cache performance.</li>
                 <li><strong>Homogeneous (Usually):</strong> Most statically-typed languages require array elements to be of the same type (e.g., an array of integers, an array of strings). Dynamically-typed languages (like Python, JavaScript) often allow arrays to hold elements of different types.</li>
             </ul>
@@ -75,23 +75,24 @@ fruits.push("Date"); // fruits is now ["Apple", "Banana", "Cherry", "Date"]
 let lastFruit = fruits.pop(); // lastFruit is "Date", fruits is ["Apple", "Banana", "Cherry"]
 
 // Iterating through an array
-for (let i = 0; i < fruits.length; i++) {
+for (let i = 0; i &lt; fruits.length; i++) {
     console.log(fruits[i]);
 }
+
 // Or using forEach
-numbers.forEach(num => {
+numbers.forEach(num =&gt; {
     console.log(num * 2);
 });
             </code></pre>
 
-            <hr> <!-- Separator -->
-            <p>Ready to practice?</p>
-            <a href="/index.html?topic=Array" class="topic-button">Go to Array Problems</a>
-
+            <hr>
+            <p>Ready to practice Array problems?</p>
+            <!-- Link to the TOPIC problems page -->
+            <a href="/problems-topic.html?topic=Array" class="topic-button">Go to Array Problems</a>
         </section>
     </main>
     <footer>
-        <p>© 2023 Daily Coding Dose</p>
+        <p>© 2024 Daily Coding Dose</p>
     </footer>
 </body>
 </html>
