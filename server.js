@@ -64,8 +64,35 @@ const testCases = {
 
 // GET /api/problems - Send a list of available problems
 app.get('/api/problems', (req, res) => {
-    const problemList = problems.map(p => ({ id: p.id, title: p.title }));
-    res.json(problemList); // Send back the list as JSON data
+    // const problemList = problems.map(p => ({ id: p.id, title: p.title }));
+    // res.json(problemList); // Send back the list as JSON data
+
+
+     const requestedTopic = req.query.topic; // Get 'topic' from query string (e.g., /api/problems?topic=Array)
+    // console.log("Requessssssssted topic", requestedTopic)
+    let allProblems = problems; // Get all problem objects
+
+    // let filteredProblems;
+    if (requestedTopic) {
+    //     // Filter problems: check if the problem's tags array (case-insensitive) includes the requested topic (case-insensitive)
+        const lowerCaseTopic = requestedTopic.toLowerCase();
+        filteredProblems = allProblems.filter(p =>
+            p.tags && Array.isArray(p.tags) && p.tags.some(tag => tag.toLowerCase() === lowerCaseTopic)
+        );
+            const problemList = filteredProblems.map(p => ({ id: p.id, title: p.title }));
+            if (problemList.length > 0) {
+                res.json(problemList); // Send back the list of filtered problems
+            } else {
+                res.status(404).json({ error: 'No problems found for this topic' }); // Handle case if no problems are found
+            }
+        } else {
+            // If no topic specified, return all problems
+            const allProblems = problems.map(p => ({ id: p.id, title: p.title }));
+            res.json(allProblems); // Send back the list of all problems
+        }
+
+    // // Only send back the ID and title for the list view
+    // res.json(problemList); // Send back the (potentially filtered) list as JSON
 });
 
 // GET /api/problems - Send a list of available problems (optionally filtered by topic)
@@ -81,25 +108,7 @@ app.get('/api/problems/:id', (req, res) => {
     } else {
         res.status(404).json({ error: 'Problem not found' }); // Send a 404 error if ID is invalid
     }
-    // const requestedTopic = req.query.topic; // Get 'topic' from query string (e.g., /api/problems?topic=Array)
-    // console.log("Requessssssssted topic", requestedTopic)
-    // let allProblems = problems; // Get all problem objects
-
-    // let filteredProblems;
-    // if (requestedTopic) {
-    //     // Filter problems: check if the problem's tags array (case-insensitive) includes the requested topic (case-insensitive)
-    //     const lowerCaseTopic = requestedTopic.toLowerCase();
-    //     filteredProblems = allProblems.filter(p =>
-    //         p.tags && Array.isArray(p.tags) && p.tags.some(tag => tag.toLowerCase() === lowerCaseTopic)
-    //     );
-    // } else {
-    //     // If no topic specified, return all problems
-    //     filteredProblems = allProblems;
-    // }
-
-    // // Only send back the ID and title for the list view
-    // const problemList = filteredProblems.map(p => ({ id: p.id, title: p.title }));
-    // res.json(problemList); // Send back the (potentially filtered) list as JSON
+   
 });
 
 // POST /api/submit - Handle JS and Python submissions (INSECURE EXECUTION)
