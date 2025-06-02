@@ -135,6 +135,8 @@ async function loadProblemList() {
 async function loadProblemDetails() {
     console.log("loadProblemDetails executing...");
     const problemId = getProblemIdFromUrl();
+    console.log(problemId, 'problemId');
+    
     const titleElement = document.getElementById('problem-title');
     const descriptionElement = document.getElementById('problem-description');
     const examplesElement = document.getElementById('problem-examples');
@@ -306,10 +308,16 @@ async function handleSubmit(problemId) {
     }
 }
 
+ async function displayProblemCount() {
+            const countElement = document.getElementById('problem-count-info'); if (!countElement) return;
+            try { const response = await fetch('/api/problems'); if (response.ok) { const problems = await response.json(); countElement.textContent = `Total Problems Available: ${problems.length}`; } else { countElement.textContent = 'Could not load problem count.';}
+        } catch (error) { console.error("Failed to fetch problem count:", error); countElement.textContent = 'Error loading problem count.'; }
+    }
+
 
 // --- Determine which function to call based on page ---
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM fully loaded.");
+    console.log("DOM fully loaded.............................................................................................");
     if (document.getElementById('problem-list')) {
         console.log("Detected problem list page. Calling loadProblemList.");
         loadProblemList();
@@ -318,8 +326,14 @@ document.addEventListener('DOMContentLoaded', () => {
          loadProblemDetails();
     } else if (document.getElementById('problem-count-info')) {
          console.log("Detected homepage. Initializing homepage elements (if any).");
+         displayProblemCount();
          // Problem count is handled by inline script in index.html
-    } else {
+    }
+//     }else if (document.body.classList.contains('topic-page')) {
+//     console.log("Detected topic page.");
+//     loadProblemList(); // or loadTopicProblems()
+// } 
+    else {
         console.log("On a page without specific list/detail loading logic.");
     }
 });
