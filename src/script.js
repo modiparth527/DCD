@@ -130,6 +130,7 @@ async function loadProblemList() {
     }
 }
 
+        const getLanguageExtension = (lang) => (lang === 'python' ? python() : javascript());
 
 // --- Load Problem Details (Your Modified Version) ---
 async function loadProblemDetails() {
@@ -221,7 +222,6 @@ async function loadProblemDetails() {
 
         // Initialize CodeMirror
         console.log("Initializing CodeMirror...");
-        const getLanguageExtension = (lang) => (lang === 'python' ? python() : javascript());
         const createEditorState = (doc, language) => EditorState.create({
             doc: doc || '', extensions: [ basicSetup, keymap.of([...defaultKeymap, indentWithTab]), getLanguageExtension(language), oneDark, EditorView.contentAttributes.of({ autocapitalize: "none", autocorrect: "off", spellcheck: "false" }) ]
         });
@@ -303,7 +303,26 @@ async function handleSubmit(problemId) {
         // Restore UI State
         submitBtn.disabled = false; languageSelectElement.disabled = false;
         // Re-enable editor
-        if (editorView) { editorView.dispatch({ effects: StateEffect.reconfigure.of(EditorView.editable.of(true)) }); }
+        console.log("editorView", editorView);
+        
+        if (editorView) { 
+            const currentLang = languageSelectElement.value;
+            editorView.dispatch({
+  effects: StateEffect.reconfigure.of([
+    basicSetup,
+    keymap.of([...defaultKeymap, indentWithTab]),
+    getLanguageExtension(currentLang),
+    oneDark,
+    EditorView.contentAttributes.of({
+      autocapitalize: "none",
+      autocorrect: "off",
+      spellcheck: "false"
+    }),
+    EditorView.editable.of(true)
+  ])
+});
+
+         }
         console.log("Submission process finished.");
     }
 }
